@@ -6,6 +6,7 @@ import fr.epita.apping.fullstack.gamesearch.domain.entity.GenreEntity;
 import fr.epita.apping.fullstack.gamesearch.domain.entity.PartnerEntity;
 import fr.epita.apping.fullstack.gamesearch.domain.entity.PlatformEntity;
 import fr.epita.apping.fullstack.gamesearch.domain.entity.TagEntity;
+import fr.epita.apping.fullstack.gamesearch.presentation.api.response.GameDetailResponse;
 import fr.epita.apping.fullstack.gamesearch.presentation.api.response.GameResponse;
 import org.springframework.stereotype.Component;
 
@@ -52,6 +53,22 @@ public class GameConverter {
                 .rating(entity.getRating())
                 .genres(entity.getGenres().stream().map(GenreEntity::getName).toList())
                 .platforms(entity.getPlatforms().stream().map(PlatformEntity::getName).toList())
+                .build();
+    }
+
+    public static GameDetailResponse toDetailResponse(GameEntity entity, List<GameEntity> similarGames) {
+        return GameDetailResponse.builder()
+                .id(entity.getId())
+                .title(entity.getTitle())
+                .releaseYear(entity.getReleaseYear())
+                .publisher(entity.getPublisher())
+                .description(entity.getDescription())
+                .coverUrl(entity.getCoverUrl())
+                .rating(entity.getRating())
+                .genres(entity.getGenres().stream().map(GenreEntity::getName).toList())
+                .platforms(entity.getPlatforms().stream().map(PlatformEntity::getName).toList())
+                .tags(entity.getTags().stream().map(TagEntity::getName).toList())
+                .similarGames(similarGames.stream().map(GameConverter::toResponse).toList())
                 .build();
     }
 }
