@@ -7,10 +7,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface GameRepository extends JpaRepository<GameModel, UUID> {
+
+    Optional<GameModel> findByExternalId(String externalId);
 
     List<GameModel> findByTitleContainingIgnoreCase(String title);
 
