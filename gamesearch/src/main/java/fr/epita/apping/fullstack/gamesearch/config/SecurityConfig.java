@@ -42,6 +42,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/games", "/games/**", "/genres", "/platforms").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/partner/**").hasRole("PARTNER")
+                        .requestMatchers(HttpMethod.POST, "/partner/register").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/games").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/games/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/games/**").hasRole("ADMIN")

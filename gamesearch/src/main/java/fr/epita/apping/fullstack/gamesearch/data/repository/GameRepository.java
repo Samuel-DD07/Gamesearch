@@ -15,6 +15,16 @@ import java.util.List;
 public interface GameRepository extends JpaRepository<GameModel, UUID>,
         JpaSpecificationExecutor<GameModel> {
 
+    List<GameModel> findByReleaseYear(Integer releaseYear);
+
+    @Query("SELECT g FROM GameModel g JOIN g.genres genre WHERE genre.name = :genreName")
+    List<GameModel> findByGenreName(@Param("genreName") String genreName);
+
+    @Query("SELECT g FROM GameModel g JOIN g.platforms platform WHERE platform.name = :platformName")
+    List<GameModel> findByPlatformName(@Param("platformName") String platformName);
+
+    List<GameModel> findByPartnerId(UUID partnerId);
+
     Optional<GameModel> findByExternalId(String externalId);
 
     @Query("SELECT DISTINCT g FROM GameModel g JOIN g.genres gen WHERE g.id != :gameId AND gen.id IN :genreIds")
@@ -22,4 +32,6 @@ public interface GameRepository extends JpaRepository<GameModel, UUID>,
 
     @Query("SELECT DISTINCT g FROM GameModel g JOIN g.platforms plat WHERE g.id != :gameId AND plat.id IN :platformIds")
     List<GameModel> findBySharedPlatforms(@Param("gameId") UUID gameId, @Param("platformIds") List<UUID> platformIds);
+
+
 }
