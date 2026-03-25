@@ -1,6 +1,8 @@
 spring:
   application:
     name: gamesearch
+  config:
+    import: optional:env[]
 
 app:
   jwt:
