@@ -13,4 +13,6 @@ public interface GameRepository extends JpaRepository<GameModel, UUID>,
         JpaSpecificationExecutor<GameModel> {
 
     Optional<GameModel> findByExternalId(String externalId);
+
+    Optional<GameModel> findByTitle(String title);
 }
