@@ -16,8 +16,10 @@ public class GameResponse {
     private String title;
     private Integer releaseYear;
     private String publisher;
+    private String description;
     private String coverUrl;
     private Float rating;
     private List<String> genres;
     private List<String> platforms;
+    private List<String> tags;
 }

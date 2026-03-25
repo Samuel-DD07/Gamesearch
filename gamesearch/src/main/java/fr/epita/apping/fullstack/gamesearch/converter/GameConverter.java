@@ -49,10 +49,12 @@ public class GameConverter {
                 .title(entity.getTitle())
                 .releaseYear(entity.getReleaseYear())
                 .publisher(entity.getPublisher())
+                .description(entity.getDescription())
                 .coverUrl(entity.getCoverUrl())
                 .rating(entity.getRating())
                 .genres(entity.getGenres().stream().map(GenreEntity::getName).toList())
                 .platforms(entity.getPlatforms().stream().map(PlatformEntity::getName).toList())
+                .tags(entity.getTags().stream().map(TagEntity::getName).toList())
                 .build();
     }
 

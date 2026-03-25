@@ -15,17 +15,28 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import fr.epita.apping.fullstack.gamesearch.converter.GameConverter;
+import fr.epita.apping.fullstack.gamesearch.domain.service.GameService;
+import fr.epita.apping.fullstack.gamesearch.presentation.api.request.GameCreateRequest;
+import fr.epita.apping.fullstack.gamesearch.presentation.api.request.GameUpdateRequest;
+import fr.epita.apping.fullstack.gamesearch.presentation.api.response.GameResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/games")
 @RequiredArgsConstructor
 public class GameResource {
 
     private final GameService gameService;
 
-    @GetMapping("/games")
+    @GetMapping
     public ResponseEntity<Page<GameResponse>> getGames(
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String genre,
@@ -41,10 +52,28 @@ public class GameResource {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/games/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<GameDetailResponse> getGame(@PathVariable UUID id) {
         return ResponseEntity.ok(
                 GameConverter.toDetailResponse(gameService.getGame(id), gameService.getSimilarGames(id))
         );
+    }
+
+    @PostMapping
+    public ResponseEntity<GameResponse> createGame(@RequestBody @Valid GameCreateRequest request) {
+        GameResponse response = GameConverter.toResponse(gameService.createGame(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<GameResponse> updateGame(@PathVariable UUID id,
+                                                   @RequestBody @Valid GameUpdateRequest request) {
+        return ResponseEntity.ok(GameConverter.toResponse(gameService.updateGame(id, request)));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGame(@PathVariable UUID id) {
+        gameService.deleteGame(id);
+        return ResponseEntity.noContent().build();
     }
 }
