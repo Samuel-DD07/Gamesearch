@@ -57,8 +57,8 @@ mr_ping:
 pipeline_integrity_check:
   stage: test
   script:
-    - echo "Pipeline state: VALID"
-    - exit 0
+    - 'echo "Pipeline state: VALID"'
+    - 'exit 0'
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
