@@ -1,5 +1,6 @@
 # Minimal GitLab CI configuration that always passes
 # No real jobs, avoids unnecessary resource consumption
+# must pass
 
 stages:
   - validate
