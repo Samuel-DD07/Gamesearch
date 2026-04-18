@@ -12,5 +12,7 @@ public interface PartnerRepository extends JpaRepository<PartnerModel, UUID> {
 
     Optional<PartnerModel> findByApiKeyHash(String apiKeyHash);
 
+    Optional<PartnerModel> findByName(String name);
+
     boolean existsByApiKeyHash(String apiKeyHash);
 }

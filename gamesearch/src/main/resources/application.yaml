@@ -1,3 +1,13 @@
 spring:
   application:
     name: gamesearch
+  config:
+    import: optional:env[]
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  admin:
+    username: ${ADMIN_USERNAME}
+    password: ${ADMIN_PASSWORD}

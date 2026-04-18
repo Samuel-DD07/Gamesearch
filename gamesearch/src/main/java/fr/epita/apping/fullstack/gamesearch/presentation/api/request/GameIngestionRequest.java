@@ -10,7 +10,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GameCreateRequest {
+public class GameIngestionRequest {
+
+    private String gameId;
 
     @NotBlank(message = "Title is required")
     private String title;
