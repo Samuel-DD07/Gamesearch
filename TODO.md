@@ -4,19 +4,19 @@
 
 - [X] Initialisation de la structure du projet
 - [X] **Modèle de données (JPA)**
-  - [X] Entités Game, Genre, Platform, Tag, Partner
+  - [X] Entités `Game`, `Genre`, `Platform`, `Tag`, `Partner`
   - [X] Relations Many-to-Many et cascade
 - [X] **Couche Service & API (Lecture)**
   - [X] Logique de recherche (JPA Specifications)
-  - [X] GET /games (Paginé + filtres)
-  - [X] GET /games/{id} (Détails)
+  - [X] `GET /games` (Paginé + filtres)
+  - [X] `GET /games/{id}` (Détails)
 
 - [/] **Kafka Ingestion (Point Critique)**
-  - [X] Configuration Kafka sans Zookeeper (KRaft mode)
-  - [ ] Implémentation du Consumer game-ingestion-topic
-  - [ ] Implémentation du Producer game-ingestion-status-topic
+  - [X] Configuration Kafka **sans Zookeeper** (KRaft mode)
+  - [ ] Implémentation du Consumer `game-ingestion-topic`
+  - [ ] Implémentation du Producer `game-ingestion-status-topic`
 - [/] **Sécurité & Administration**
-  - [X] Configuration de base (Accès public /games)
+  - [X] Configuration de base (Accès public `/games`)
   - [ ] Authentification par API Key pour les partenaires
   - [ ] Gestion globale des exceptions
 
@@ -33,7 +33,7 @@
 ## 3. DevOps & Docker - *Porté par Trusted*
 
 - [/] **Containerisation**
-  - [X] docker-compose.yml (Kafka KRaft, Postgres, Backend)
+  - [X] `docker-compose.yml` (Kafka KRaft, Postgres, Backend)
   - [X] Dockerfiles optimisés
   - [ ] Frontend integration
 
