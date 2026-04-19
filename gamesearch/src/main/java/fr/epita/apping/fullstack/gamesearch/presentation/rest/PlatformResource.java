@@ -1,4 +1,3 @@
 package fr.epita.apping.fullstack.gamesearch.presentation.rest;
 
-public class PlatformResource {
-}
+public class PlatformResource {}

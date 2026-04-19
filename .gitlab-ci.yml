@@ -1,14 +1,166 @@
-# Minimal GitLab CI configuration that always passes
-# No real jobs, avoids unnecessary resource consumption
-# must pass
+# GameSearch CI/CD Pipeline
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  # Chemins exacts pour registry
+  BACKEND_IMAGE: $CI_REGISTRY_IMAGE/gamesearch-backend
+  FRONTEND_IMAGE: $CI_REGISTRY_IMAGE/gamesearch-frontend
+  TRIVY_VERSION: "0.49.0"
+  SAST_STAGE: audit
+
+cache:
+  paths:
+    - .m2/repository
+    - gamesearch-frontend/node_modules/
 
 stages:
-  - validate
+  - audit          # Sécurité statique (Secrets, SAST)
+  - lint           # Formatage et Qualité (Spotless, ESLint)
+  - test           # Tests unitaires et Couverture (JaCoCo)
+  - modernization  # Validation Architecture (ArchUnit)
+  - build          # Packaging Multi-Arch (Docker Buildx)
+  - security       # Scan de vulnérabilités (Trivy)
+  - promote        # Promotion vers Production
 
-pipeline_always_pass:
-  stage: validate
-  script:
-    - 'echo "Pipeline status: SUCCESS (Bypass mode)"'
-    - 'exit 0'
+# ==========================================
+# STAGE: AUDIT
+# ==========================================
+secret_detection:
+  stage: audit
+  extends: .secret-analyzer
   rules:
-    - when: always
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^infra\//
+
+
+# ==========================================
+# STAGE: LINT
+# ==========================================
+backend-format:
+  stage: lint
+  image: maven:3.9.6-eclipse-temurin-21
+  script:
+    - cd gamesearch
+    - mvn spotless:check
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^infra\//
+
+frontend-lint:
+  stage: lint
+  image: node:20-alpine
+  script:
+    - cd gamesearch-frontend
+    - npm ci
+    # Installation dynamique des dépendances de linting manquantes dans le lockfile
+    - npm install --no-save eslint@^8.57.0 eslint-config-react-app eslint-plugin-react --legacy-peer-deps
+    - npm run lint
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^infra\//
+
+# ==========================================
+# STAGE: TEST
+# ==========================================
+backend-test:
+  stage: test
+  image: maven:3.9.6-eclipse-temurin-21
+  script:
+    - cd gamesearch
+    - mvn clean verify
+  artifacts:
+    reports:
+      junit: gamesearch/target/surefire-reports/TEST-*.xml
+    paths:
+      - gamesearch/target/site/jacoco/
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^infra\//
+
+# ==========================================
+# STAGE: MODERNIZATION (ArchUnit)
+# ==========================================
+architecture-modernization:
+  stage: modernization
+  image: maven:3.9.6-eclipse-temurin-21
+  script:
+    - cd gamesearch
+    # Exécution ciblée des tests ArchUnit pour garantir l'usage de Java 21 Records 
+    # et le respect de la Clean Architecture.
+    - mvn test -Dtest="*Arch*" -Dsurefire.failIfNoSpecifiedTests=false
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^infra\//
+
+# ==========================================
+# STAGE: BUILD (Docker Multi-Arch)
+# ==========================================
+docker-build:
+  stage: build
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker buildx create --use
+  script:
+    # Génération d'un tag unique (Pipeline ID + Timestamp) pour une traçabilité parfaite dans le registre
+    - export RANDOM_TAG="${CI_PIPELINE_IID}-$(date +%s)"
+    
+    # Build Backend
+    - docker buildx build --platform linux/amd64,linux/arm64 -t $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA -t $BACKEND_IMAGE:dev-latest -t $BACKEND_IMAGE:$RANDOM_TAG --push gamesearch
+
+    # Build Frontend
+    - docker buildx build --platform linux/amd64,linux/arm64 -t $FRONTEND_IMAGE:$CI_COMMIT_SHORT_SHA -t $FRONTEND_IMAGE:dev-latest -t $FRONTEND_IMAGE:$RANDOM_TAG --push gamesearch-frontend
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH =~ /^infra\//
+
+# ==========================================
+# STAGE: SECURITY (Trivy Scan)
+# ==========================================
+container_scanning:
+  stage: security
+  image:
+    name: docker.io/aquasec/trivy:${TRIVY_VERSION}
+    entrypoint: [""]
+  variables:
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL: "$CI_REGISTRY"
+  script:
+    # Analyse Backend
+    - trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA
+    # Analyse Frontend
+    - trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress $FRONTEND_IMAGE:$CI_COMMIT_SHORT_SHA
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH =~ /^infra\//
+
+# ==========================================
+# STAGE: PROMOTE (Main -> Production)
+# ==========================================
+docker-promote-prod:
+  stage: promote
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    # Récupérer les images validées en Recette (dev-latest)
+    - docker pull $BACKEND_IMAGE:dev-latest
+    - docker pull $FRONTEND_IMAGE:dev-latest
+    
+    # Rétiqueter les images pour la Production
+    - docker tag $BACKEND_IMAGE:dev-latest $BACKEND_IMAGE:prod-latest
+    - docker tag $FRONTEND_IMAGE:dev-latest $FRONTEND_IMAGE:prod-latest
+    - docker tag $BACKEND_IMAGE:dev-latest $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA
+    
+    # Pousser les tags en Production
+    - docker push $BACKEND_IMAGE:prod-latest
+    - docker push $FRONTEND_IMAGE:prod-latest
+    - docker push $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual

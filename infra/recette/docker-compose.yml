@@ -1,0 +1,188 @@
+name: gamesearch
+
+networks:
+  gamesearch_frontend:
+    name: gamesearch_frontend
+    internal: false
+  gamesearch_backend:
+    name: gamesearch_backend
+    internal: true
+  gamesearch_data:
+    name: gamesearch_data
+    internal: true
+  edge:
+    external: true
+
+services:
+  # ==========================================
+  # BASE DE DONNÉES
+  # ==========================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: gamesearch-postgres-rec
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      POSTGRES_DB: gamesearch
+      POSTGRES_USER: gamesearch_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe123!}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - gamesearch_data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gamesearch_user -d gamesearch"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # DATABASE ADMINISTRATION (Adminer)
+  # ==========================================
+  adminer:
+    image: adminer:latest
+    container_name: gamesearch-adminer-rec
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    networks:
+      - edge
+      - gamesearch_data
+    depends_on:
+      - postgres
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=edge"
+      - "traefik.http.routers.gamesearch-adminer.rule=Host(`db-recette-gs.basteproductions.fr`)"
+      - "traefik.http.routers.gamesearch-adminer.entrypoints=websecure"
+      - "traefik.http.routers.gamesearch-adminer.tls.certresolver=letsencrypt"
+      - "traefik.http.services.gamesearch-adminer.loadbalancer.server.port=8080"
+
+  # ==========================================
+  # MESSAGING (KAFKA - KRaft Mode)
+  # ==========================================
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: gamesearch-kafka-rec
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - gamesearch_backend
+      - gamesearch_data
+
+  # ==========================================
+  # BACKEND (Spring Boot)
+  # ==========================================
+  backend:
+    image: registry.basteproductions.fr/epita_dev_1/fullstack/gamesearch-backend:dev-latest
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/gamesearch
+      - SPRING_DATASOURCE_USERNAME=gamesearch_user
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-ChangeMe123!}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - JWT_SECRET=${JWT_SECRET:-VerySecretKeyForJwtAuthenticationPleaseChange!}
+      - JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS:-86400000}
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+    networks:
+      - edge
+      - gamesearch_backend
+      - gamesearch_data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=edge"
+      # API générale
+      - "traefik.http.routers.gamesearch-api.rule=Host(`api.gamesearch-rec.basteproductions.fr`)"
+      - "traefik.http.routers.gamesearch-api.entrypoints=websecure"
+      - "traefik.http.routers.gamesearch-api.tls.certresolver=letsencrypt"
+      #- "traefik.http.routers.gamesearch-api.middlewares=crowdsec-bouncer@file"
+      - "traefik.http.services.gamesearch-api.loadbalancer.server.port=8080"
+      
+      # Rate Limiting pour l'ingestion partenaires (sécurité)
+      - "traefik.http.middlewares.partner-ratelimit.ratelimit.average=10"
+      - "traefik.http.middlewares.partner-ratelimit.ratelimit.burst=20"
+      - "traefik.http.routers.gamesearch-partner.rule=Host(`api.gamesearch-rec.basteproductions.fr`) && PathPrefix(`/partner/games`)"
+      - "traefik.http.routers.gamesearch-partner.entrypoints=websecure"
+      - "traefik.http.routers.gamesearch-partner.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.gamesearch-partner.middlewares=partner-ratelimit"
+      - "traefik.http.services.gamesearch-partner.loadbalancer.server.port=8080"
+
+      # Observabilité Prometheus
+      - "prometheus.scrape=true"
+      - "prometheus.port=8080"
+      - "prometheus.path=/actuator/prometheus"
+
+      # Mise a jour automatique via registry
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  # ==========================================
+  # FRONTEND (React)
+  # ==========================================
+  frontend:
+    image: registry.basteproductions.fr/epita_dev_1/fullstack/gamesearch-frontend:dev-latest
+    container_name: gamesearch-frontend-rec
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - REACT_APP_API_URL=https://api.gamesearch-rec.basteproductions.fr
+    networks:
+      - edge
+      - gamesearch_frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=edge"
+      - "traefik.http.routers.gamesearch-web.rule=Host(`gamesearch-rec.basteproductions.fr`)"
+      - "traefik.http.routers.gamesearch-web.entrypoints=websecure"
+      - "traefik.http.routers.gamesearch-web.tls.certresolver=letsencrypt"
+      #- "traefik.http.routers.gamesearch-web.middlewares=crowdsec-bouncer@file"
+      - "traefik.http.services.gamesearch-web.loadbalancer.server.port=80"
+
+      # Mise a jour automatique
+      - "com.centurylinklabs.watchtower.enable=true"
+
+volumes:
+  postgres_data:
+    name: gamesearch_postgres_data
+  kafka_data:
+    name: gamesearch_kafka_data
