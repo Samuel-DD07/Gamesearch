@@ -1,0 +1,484 @@
+Darlin — 04/03/2026 21:37mercredi 4 mars 2026 à 21:37
+Hello @everyone
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+[21:38]mercredi 4 mars 2026 à 21:38
+Nous devons creer le repo et le document de conception
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+[21:38]mercredi 4 mars 2026 à 21:38
+Pour demain au plus tard
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+5 mars 2026
+
+Trusted — 05/03/2026 00:33jeudi 5 mars 2026 à 00:33
+Ok pour moi je me place sur la partie Devops.
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+
+Darlin — 05/03/2026 00:50jeudi 5 mars 2026 à 00:50
+D'accord. Là je rédige le document de conception et je l'enverrai demain matin pour validation de votre part
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+[00:50]jeudi 5 mars 2026 à 00:50
+Vu que tu t'occupes de la partie DevOps. S'il te plaît créé un repo gitlab et invites nous
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+
+@Darlin
+Vu que tu t'occupes de la partie DevOps. S'il te plaît créé un repo gitlab et invites nous
+
+Trusted — 05/03/2026 01:14jeudi 5 mars 2026 à 01:14
+C’est déjà fait faut juste aller sur le group epitasdev1 tu verras le repo
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+
+Darlin — 05/03/2026 01:16jeudi 5 mars 2026 à 01:16
+
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+[01:18]jeudi 5 mars 2026 à 01:18
+Indique moi comment retrouver le groupe stp
+
+Trusted — 05/03/2026 01:21jeudi 5 mars 2026 à 01:21
+Refresh et tu devrais le voir
+
+Darlin — 05/03/2026 01:24jeudi 5 mars 2026 à 01:24
+J'ai reçu le mail. C'est okay
+
+Darlin — 05/03/2026 11:36jeudi 5 mars 2026 à 11:36
+https://gitlab.basteproductions.fr/epita_dev_1/fullstack
+GitLab
+Sign in · GitLab
+GitLab Enterprise Edition
+
+[11:36]jeudi 5 mars 2026 à 11:36
+Le lien du repo @Ninon
+
+Trusted — 05/03/2026 11:45jeudi 5 mars 2026 à 11:45
+@Ninon je t’ai envoyé un mail avec ton mdp ton id est Ninon
+
+1
+Ajouter une réaction
+
+Darlin — 05/03/2026 11:46jeudi 5 mars 2026 à 11:46
+Je viens de push le document de conception @Trusted et je t'ai aussi envoye le lien vers le word pour editon en cas de besoin
+[11:46]jeudi 5 mars 2026 à 11:46
+Tu peux check et si tu trouves qu'il faut apporter des modifications tu me dis
+
+Trusted — 05/03/2026 11:46jeudi 5 mars 2026 à 11:46
+Merci je regarde quand je suis dispo
+
+Darlin — 05/03/2026 11:47jeudi 5 mars 2026 à 11:47
+@Ninon envoie le mail au prof avec le lien vers notre repo.
+
+Trusted — 05/03/2026 11:54jeudi 5 mars 2026 à 11:54
+Le mail qui dit quoi ?
+[11:56]jeudi 5 mars 2026 à 11:56
+Je vais rétablir l’envoie de mail et ajouter le prof en viewer quand je serai dispo
+
+Ninon — 05/03/2026 15:29jeudi 5 mars 2026 à 15:29
+J’ai envoyé le mail au prof
+
+Ninon — 05/03/2026 18:39jeudi 5 mars 2026 à 18:39
+Le prof dit qu’il ne parvient pas à accéder au repo (modifié)jeudi 5 mars 2026 à 18:39
+
+Trusted
+Je vais rétablir l’envoie de mail et ajouter le prof en viewer quand je serai dispo
+
+Trusted — 05/03/2026 18:40jeudi 5 mars 2026 à 18:40
+C’est normal
+
+Ninon — 05/03/2026 18:42jeudi 5 mars 2026 à 18:42
+Vous êtes tous en copie
+
+Darlin — 05/03/2026 18:43jeudi 5 mars 2026 à 18:43
+Tu peux lui donner accès au repo stp
+
+Trusted — 05/03/2026 18:44jeudi 5 mars 2026 à 18:44
+Quand je serai dispo, oui
+
+Darlin — 05/03/2026 18:44jeudi 5 mars 2026 à 18:44
+Ninon je vais envoyer le document tu vas le mettre en PJ et dire au prof qu'on va l'inviter sur le repo
+[18:46]jeudi 5 mars 2026 à 18:46
+
+Document de conception.pdf
+232.57 KB
+Télécharger
+
+Ninon — 05/03/2026 18:47jeudi 5 mars 2026 à 18:47
+Si on peut l’inviter aujourd’hui ce serait bien parce qu’il a dit qu’il noterait aussi le fait que le document lui soit envoyé ou déposé dans le repo
+
+1
+Ajouter une réaction
+
+Trusted — 05/03/2026 18:51jeudi 5 mars 2026 à 18:51
+@Ninon tu peux me dire si tu as bien reçu ce mail de création de compte stp ?
+
+
+Darlin — 05/03/2026 18:52jeudi 5 mars 2026 à 18:52
+oui elle a recu
+
+Trusted — 05/03/2026 18:52jeudi 5 mars 2026 à 18:52
+Ok merci je créer le compte du prof dans quelques minutes
+
+Darlin — 05/03/2026 18:52jeudi 5 mars 2026 à 18:52
+Merci
+
+Trusted — 05/03/2026 18:53jeudi 5 mars 2026 à 18:53
+Merci à toi pour le document
+[18:53]jeudi 5 mars 2026 à 18:53
+Et à Ninon
+
+Trusted — 05/03/2026 19:06jeudi 5 mars 2026 à 19:06
+C’est fait
+
+Ninon — 05/03/2026 19:37jeudi 5 mars 2026 à 19:37
+On l’a rajouté c’est ça ?
+8 mars 2026
+
+Darlin — 08/03/2026 12:49dimanche 8 mars 2026 à 12:49
+Hello @everyone . On peut faire un reunion ce soir ou demain pour se partager le travaiil ? La deadline du prochain spring approche
+
+Ninon — 08/03/2026 17:47dimanche 8 mars 2026 à 17:47
+Hello d'accord vous avez vu les retours  du prof ?
+
+Darlin — 08/03/2026 18:26dimanche 8 mars 2026 à 18:26
+Il a fait des retours où ?
+[18:32]dimanche 8 mars 2026 à 18:32
+Je n'ai pas mis des spring car je pensais qu'on allait utiliser celui donné dans la description du projet
+
+Ninon — 08/03/2026 19:21dimanche 8 mars 2026 à 19:21
+Par mail  il y’a l’Excel
+
+Darlin — 08/03/2026 19:21dimanche 8 mars 2026 à 19:21
+J'ai vu
+
+@Darlin
+Je n'ai pas mis des spring car je pensais qu'on allait utiliser celui donné dans la description du projet
+
+Ninon — 08/03/2026 19:22dimanche 8 mars 2026 à 19:22
+Oui mais askip il le voulait dans le document en plus il nous a plutôt bien noté sur les autres
+
+Darlin — 08/03/2026 19:22dimanche 8 mars 2026 à 19:22
+okay
+9 mars 2026
+
+@Darlin
+Hello @everyone . On peut faire un reunion ce soir ou demain pour se partager le travaiil ? La deadline du prochain spring approche
+
+Trusted — 09/03/2026 19:02lundi 9 mars 2026 à 19:02
+dispo apres 21h
+
+Darlin — 09/03/2026 19:02lundi 9 mars 2026 à 19:02
+D;accord
+
+Darlin — 09/03/2026 21:14lundi 9 mars 2026 à 21:14
+Dispo ??
+
+Trusted — 09/03/2026 21:17lundi 9 mars 2026 à 21:17
+oui
+
+Darlin — 09/03/2026 21:18lundi 9 mars 2026 à 21:18
+D'accord et les autres ??
+
+Trusted — 09/03/2026 21:23lundi 9 mars 2026 à 21:23
+hmm je crois que c'est mort.
+
+Si ça dérange personne, comme exprimé plus tôt, j'aimerai m'occuper de cette partie :
+
+Amélioration pipeline CI/CD 
+et 
+Définition des environnements d’intégration et de production
+
+Darlin — 09/03/2026 21:24lundi 9 mars 2026 à 21:24
+La partie devops integre aussi les dockerfile pour front et back
+[21:24]lundi 9 mars 2026 à 21:24
+bref tout ce qui est docker
+[21:25]lundi 9 mars 2026 à 21:25
+Je crois Samuel est plus safe avec le Front ....
+[21:25]lundi 9 mars 2026 à 21:25
+Moi je veux bien travailler sur le backend
+[21:27]lundi 9 mars 2026 à 21:27
+Deja il faut initialiser le projet et creer le squelette (structure)
+
+@Darlin
+La partie devops integre aussi les dockerfile pour front et back
+
+Trusted — 09/03/2026 21:39lundi 9 mars 2026 à 21:39
+Oui, c'est parfaitement développable en parallèle non ? On intégrera ce qui est spécifique à vos implémentations, notamment les Dockerfiles, tests et autres une fois prêt avec une orchestration robuste via Docker-compose pour la stack complète : Backend (Java/Spring Boot), cluster Kafka et Frontend.
+
+Darlin — 09/03/2026 21:40lundi 9 mars 2026 à 21:40
+D'accord
+[21:40]lundi 9 mars 2026 à 21:40
+Tu peux initializer le projet ??
+[21:40]lundi 9 mars 2026 à 21:40
+Ou je m'en charge ??
+
+Trusted — 09/03/2026 21:40lundi 9 mars 2026 à 21:40
+Vas-y si ça te dérange pas
+
+Darlin — 09/03/2026 21:41lundi 9 mars 2026 à 21:41
+D'accord
+[21:42]lundi 9 mars 2026 à 21:42
+Donc toi tu fais la partie devops, samuel le frontend et je me charge du backend. ninon travaillera entre le back et le front
+
+1
+Ajouter une réaction
+[21:42]lundi 9 mars 2026 à 21:42
+Si tout le monde est d'accord ??
+
+Trusted — 09/03/2026 21:44lundi 9 mars 2026 à 21:44
+Côté branches on va sur du : 
+
+main (production) notre branche clean et stable,
+dev (integration) notre branche de dev ou on merge les features terminées,
+feat/nom-de-feature,
+
+? ou tu as une meilleure idée ? (modifié)lundi 9 mars 2026 à 21:44
+
+Darlin — 09/03/2026 21:44lundi 9 mars 2026 à 21:44
+C'est ca
+[21:44]lundi 9 mars 2026 à 21:44
+comme dans le document de conception
+[21:45]lundi 9 mars 2026 à 21:45
+feature/US-XXX
+[21:45]lundi 9 mars 2026 à 21:45
+chaque feature correspond a une user-storie
+[21:45]lundi 9 mars 2026 à 21:45
+MR obligatoire
+
+1
+Ajouter une réaction
+[21:45]lundi 9 mars 2026 à 21:45
+donc il faut secure les branches
+
+@Darlin
+donc il faut secure les branches
+
+Trusted — 09/03/2026 21:46lundi 9 mars 2026 à 21:46
+Tu pourras me le rappeler une fois créer stp si j'oublies
+
+Darlin — 09/03/2026 21:46lundi 9 mars 2026 à 21:46
+Pas de soucis
+
+Trusted — 09/03/2026 21:46lundi 9 mars 2026 à 21:46
+merci
+
+Darlin — 09/03/2026 21:46lundi 9 mars 2026 à 21:46
+En passant ca va mieux ??
+
+Trusted — 09/03/2026 21:48lundi 9 mars 2026 à 21:48
+Mieux oui merci. C'est toujours l'enfer niveau douleur + symptomes mais voila on se soigne (modifié)lundi 9 mars 2026 à 21:48
+
+Darlin — 09/03/2026 21:56lundi 9 mars 2026 à 21:56
+Courage boss
+
+Trusted — 09/03/2026 21:58lundi 9 mars 2026 à 21:58
+merci !
+[21:58]lundi 9 mars 2026 à 21:58
+dis moi, le document demande d utiliser une plateform d'hebergement specifique ?
+
+Darlin — 09/03/2026 21:59lundi 9 mars 2026 à 21:59
+Non
+
+Trusted — 09/03/2026 21:59lundi 9 mars 2026 à 21:59
+ok ok merci
+
+Trusted — 09/03/2026 22:06lundi 9 mars 2026 à 22:06
+et il a dit qu on devait pouvoir lancer sur nimporte quelle machine ( sans avoir besoin de configuration : de docker login / les accès au registry etc ...) ou on peut juste lancer sur notre pc deja tout pret ? (modifié)lundi 9 mars 2026 à 22:06
+
+Darlin — 09/03/2026 22:06lundi 9 mars 2026 à 22:06
+On peut lancer sur notre PC
+[22:06]lundi 9 mars 2026 à 22:06
+Il n'a meme pas parler d'herbergement
+[22:06]lundi 9 mars 2026 à 22:06
+Je vais verifier mais je ne pense pas
+
+Trusted — 09/03/2026 22:17lundi 9 mars 2026 à 22:17
+Hmm d'accord, parce que ça pourrait redéfinir complètement notre stratégie CI/CD . Je vais envoyer un mail au prof demain pour valider la possibilité d'héberger la solution sur mon propre serveur pour la mise en situation de production/recette.
+
+Je veux aussi m'assurer que le déploiement d'une stack avancée dépassant le simple MVP notamment le monitoring (Grafana, Prometheus) , la sécurité proactive (CrowdSec) et l'automatisation (Watchtower) est bien le levier attendu pour garantir le niveau "Excellent" sur les critères d'industrialisation et de robustesse "4 : industrialisation propre + bonus (qualité statique, versioning, etc.)."
+
+Darlin — 09/03/2026 22:18lundi 9 mars 2026 à 22:18
+Deja tu peux reagarder notre document de conception et le document du sujet
+[22:18]lundi 9 mars 2026 à 22:18
+Tu verras plus de details
+
+Trusted — 09/03/2026 22:18lundi 9 mars 2026 à 22:18
+C'est ce que je regarde là
+[22:23]lundi 9 mars 2026 à 22:23
+Bon sur ce, je vais me reposer le dos ! A tres vite @Darlin
+
+1
+Ajouter une réaction
+15 mars 2026
+
+Ninon — 15/03/2026 03:27dimanche 15 mars 2026 à 03:27
+
+
+@Ninon
+Clique pour voir les pièces jointes
+
+Trusted — 15/03/2026 03:28dimanche 15 mars 2026 à 03:28
+Les accès sont ouverts pour lui en read en write je lui ai répondu
+
+Ninon — 15/03/2026 03:45dimanche 15 mars 2026 à 03:45
+D’accord merci
+[03:45]dimanche 15 mars 2026 à 03:45
+Et pour la partie planning ? On lui dit quoi ?
+
+Darlin — 15/03/2026 22:52dimanche 15 mars 2026 à 22:52
+Y'a rien a dire en vrai
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+[22:52]dimanche 15 mars 2026 à 22:52
+J'ai cree la structure du projet
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+[22:52]dimanche 15 mars 2026 à 22:52
+On peut maintenant taffe
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+[22:52]dimanche 15 mars 2026 à 22:52
+et j'ai push
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+[22:53]dimanche 15 mars 2026 à 22:53
+@Trusted Maintenant faut creer les branches pour chaque feature/US-XXX pour qu'on commence a push le code
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+[22:54]dimanche 15 mars 2026 à 22:54
+N'oublie pas de secure la branche principale
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+16 mars 2026
+
+Darlin — 16/03/2026 14:23lundi 16 mars 2026 à 14:23
+@Trusted tu as deja mis la stack devops en place. Parce que je veux commencer a developper aujourd'hui
+:thumbsup:
+Clique pour réagir
+:joy:
+Clique pour réagir
+:white_check_mark:
+Clique pour réagir
+Ajouter une réaction
+Répondre
+Transférer
+Plus
+
+Darlin — 16/03/2026 21:05lundi 16 mars 2026 à 21:05
+@Trusted  je vais creer une branche dev et a partir de la branche dev je vais creer des branches features/nom-de-la-feature
