@@ -118,7 +118,7 @@ docker-build:
     - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH =~ /^infra\//
 
 # ==========================================
-# STAGE: SECURITY (Trivy Scan)
+# STAGE: SECURITY (Trivy Scan) 
 # ==========================================
 container_scanning:
   stage: security
