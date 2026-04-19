@@ -1,2 +1,1 @@
-./start.sh
-docker logs devisu-backend-recette 2>&1 | grep -A5 "PREMIER DÉMARRAGE"
+# trashfile
