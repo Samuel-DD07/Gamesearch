@@ -1,6 +1,5 @@
 [INFO] Scanning for projects...
 [ERROR] [ERROR] Some problems were encountered while processing the POMs:
-<<<<<<< HEAD
 [ERROR] 'dependencies.dependency.version' for org.springframework.boot:spring-boot-h2console:jar is missing. @ line 33, column 15
 [ERROR] 'dependencies.dependency.version' for org.springframework.boot:spring-boot-starter-kafka:jar is missing. @ line 45, column 15
 [ERROR] 'dependencies.dependency.version' for org.springframework.boot:spring-boot-starter-webmvc:jar is missing. @ line 57, column 15
@@ -23,14 +22,6 @@
 [ERROR]     'dependencies.dependency.version' for org.springframework.boot:spring-boot-starter-security-test:jar is missing. @ line 122, column 15
 [ERROR]     'dependencies.dependency.version' for org.springframework.boot:spring-boot-starter-validation-test:jar is missing. @ line 127, column 15
 [ERROR]     'dependencies.dependency.version' for org.springframework.boot:spring-boot-starter-webmvc-test:jar is missing. @ line 132, column 15
-=======
-[ERROR] 'dependencies.dependency.version' for org.springframework.boot:spring-boot-starter-kafka:jar is missing. @ line 44, column 15
- @ 
-[ERROR] The build could not read 1 project -> [Help 1]
-[ERROR]   
-[ERROR]   The project fr.epita.apping.fullstack.gamesearch:gamesearch:0.0.1-SNAPSHOT (/home/samuel/Documents/Epita/fullstack/gamesearch/pom.xml) has 1 error
-[ERROR]     'dependencies.dependency.version' for org.springframework.boot:spring-boot-starter-kafka:jar is missing. @ line 44, column 15
->>>>>>> 34dd8d463ca2e8a82a8990771d31e71b2064d270
 [ERROR] 
 [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
 [ERROR] Re-run Maven using the -X switch to enable full debug logging.
