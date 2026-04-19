@@ -56,3 +56,35 @@ L'exposition publique repose sur l'entrée `edge` gérée par un proxy Traefik, 
 Les environnements exploitent un paradigme de mise à jour semi-délégué.
 Le démon **Watchtower**, déployé localement via un socket Docker, sonde avec récurrence le registre à la recherche d'une altération de sha256 sur le tag scruté. 
 La commande `WATCHTOWER_LABEL_ENABLE=true` forme un sas d'arrêt radical : un conteneur qui ne porte pas explicitement le label `com.centurylinklabs.watchtower.enable=true` sera silencieusement ignoré, empêchant Watchtower d'affecter accidentellement d'autres infrastructures portées par la même machine virtuelle.
+
+## 5. Résolution des Problèmes d'Infrastructure et Isolation
+
+### Isolation des Volumes de Données
+Afin d'éviter les collisions entre les environnements de Production et de Recette sur un même hôte Docker, une nomenclature stricte a été adoptée pour les volumes persistants. L'utilisation de noms de volumes globaux identiques provoquait des avertissements d'appartenance de projet et empêchait la suppression propre des ressources.
+
+Chaque environnement utilise désormais un suffixe explicite dans ses manifestes `docker-compose.yml` :
+- **Production** : `gamesearch_postgres_data_prd`, `gamesearch_kafka_data_prd`
+- **Recette** : `gamesearch_postgres_data_rec`, `gamesearch_kafka_data_rec`
+
+Cette approche garantit une isolation totale des données et permet l'exécution de commandes de nettoyage (`docker compose down -v`) sans risque d'affecter l'environnement adjacent.
+
+### Configuration du Reverse Proxy Nginx (Frontend)
+Le routage des requêtes API via le conteneur Frontend a nécessité des ajustements critiques pour assurer la communication avec le Backend.
+
+#### Routage et Préfixe /api
+Le Backend Spring Boot est configuré pour répondre sur la racine `/`. Le Frontend (React) effectuant ses appels sur `/api/*`, Nginx doit impérativement retirer ce préfixe avant de transmettre la requête au service Backend.
+
+#### Ordre des Directives et Erreurs 500
+Une attention particulière doit être portée à l'ordre des instructions dans la configuration Nginx lors de l'utilisation de variables pour l'adresse de destination (`proxy_pass $upstream`).
+
+L'instruction `rewrite ... break` interrompt immédiatement le traitement des directives de configuration pour la phase en cours. Par conséquent, toute affectation de variable (`set`) doit être déclarée **avant** la règle de réécriture. Une inversion de cet ordre entraîne une erreur 500 car Nginx tente d'utiliser une variable non initialisée au moment du passage au proxy.
+
+Configuration cible validée :
+```nginx
+location /api/ {
+    set $upstream http://gs-backend-prd:8080; # Initialisation en premier
+    rewrite ^/api/(.*) /$1 break;            # Réécriture et arrêt
+    proxy_pass $upstream;                     # Utilisation de la variable
+}
+```
+Cette configuration permet une résolution DNS dynamique (via le `resolver` Docker) tout en assurant la transformation correcte des URLs.
