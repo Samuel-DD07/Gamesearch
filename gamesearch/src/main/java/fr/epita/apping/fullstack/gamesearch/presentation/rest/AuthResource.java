@@ -18,15 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthResource {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
+  private final AuthenticationManager authenticationManager;
+  private final JwtService jwtService;
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.username(), request.password())
-        );
-        String token = jwtService.generateToken(request.username());
-        return ResponseEntity.ok(new LoginResponse(token));
-    }
+  @PostMapping("/login")
+  public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+    authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(request.username(), request.password()));
+    String token = jwtService.generateToken(request.username());
+    return ResponseEntity.ok(new LoginResponse(token));
+  }
 }

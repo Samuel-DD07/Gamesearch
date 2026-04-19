@@ -1,8 +1,7 @@
 package fr.epita.apping.fullstack.gamesearch.domain.entity;
 
-import lombok.*;
-
 import java.util.UUID;
+import lombok.*;
 
 @Getter
 @Setter
@@ -11,9 +10,9 @@ import java.util.UUID;
 @Builder
 public class PartnerEntity {
 
-    private UUID id;
-    private String name;
-    private String apiKeyHash;
-    private Boolean active;
-    private String plainApiKey; // portée une seule fois lors de la création, jamais persistée
+  private UUID id;
+  private String name;
+  private String apiKeyHash;
+  private Boolean active;
+  private String plainApiKey;
 }
