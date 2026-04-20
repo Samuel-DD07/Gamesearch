@@ -15,7 +15,7 @@
 | Documentation interne développeurs | ⚠️ Partielle | 🟡 Moyenne |
 | Tests unitaires avec contenu réel | ✅ Complétés | ✅ OK |
 | Tests ArchUnit (architecture hexagonale) | ✅ Complétés | ✅ OK |
-| Tests End-to-End | ❌ Absents | 🟡 Moyenne |
+| Tests End-to-End | ⚠️ En cours (MR !12) | 🔴 Haute |
 | Couverture JaCoCo ≥ 70% (objectif final 80%) | ✅ Enforced | ⚠️ À augmenter |
 | Pipeline CI/CD documentée avec artefacts | ✅ Présente | ✅ OK |
 | Rapport qualité / CVE Trivy | ✅ Pipeline OK | ✅ OK |
