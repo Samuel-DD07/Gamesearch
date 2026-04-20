@@ -17,6 +17,8 @@ jest.mock('../services/api', () => ({
     }
 }));
 
+const future = { v7_startTransition: true, v7_relativeSplatPath: true };
+
 describe('LoginPage', () => {
     const mockNavigate = jest.fn();
 
@@ -29,7 +31,7 @@ describe('LoginPage', () => {
 
     it('renders the login form', () => {
         render(
-            <MemoryRouter>
+            <MemoryRouter future={future}>
                 <LoginPage />
             </MemoryRouter>
         );
@@ -43,7 +45,7 @@ describe('LoginPage', () => {
         authService.login.mockResolvedValue({ data: { token: 'fake-jwt-token' } });
 
         render(
-            <MemoryRouter>
+            <MemoryRouter future={future}>
                 <LoginPage />
             </MemoryRouter>
         );
@@ -68,7 +70,7 @@ describe('LoginPage', () => {
         });
 
         render(
-            <MemoryRouter>
+            <MemoryRouter future={future}>
                 <LoginPage />
             </MemoryRouter>
         );

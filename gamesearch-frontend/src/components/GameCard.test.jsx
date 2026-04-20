@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import GameCard from './GameCard';
 
+const future = { v7_startTransition: true, v7_relativeSplatPath: true };
+
 describe('GameCard', () => {
     const mockGame = {
         id: '123',
@@ -16,7 +18,7 @@ describe('GameCard', () => {
 
     it('renders game details correctly', () => {
         render(
-            <MemoryRouter>
+            <MemoryRouter future={future}>
                 <GameCard game={mockGame} />
             </MemoryRouter>
         );

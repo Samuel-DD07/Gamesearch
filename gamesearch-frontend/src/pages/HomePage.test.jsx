@@ -18,6 +18,8 @@ const mockGamesList = [
     { id: '2', title: 'Game 2', rating: 8.5 }
 ];
 
+const future = { v7_startTransition: true, v7_relativeSplatPath: true };
+
 describe('HomePage', () => {
     beforeEach(() => {
         // Reset mocks before each test
@@ -35,7 +37,7 @@ describe('HomePage', () => {
 
     it('renders the main title and fetches games on mount', async () => {
         render(
-            <MemoryRouter>
+            <MemoryRouter future={future}>
                 <HomePage />
             </MemoryRouter>
         );
@@ -65,7 +67,7 @@ describe('HomePage', () => {
         });
 
         render(
-            <MemoryRouter>
+            <MemoryRouter future={future}>
                 <HomePage />
             </MemoryRouter>
         );
@@ -76,7 +78,7 @@ describe('HomePage', () => {
 
     it('opens filter panel when clicking on Filters button', async () => {
         render(
-            <MemoryRouter>
+            <MemoryRouter future={future}>
                 <HomePage />
             </MemoryRouter>
         );

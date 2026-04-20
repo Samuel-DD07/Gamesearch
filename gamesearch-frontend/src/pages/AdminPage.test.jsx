@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import AdminPage from './AdminPage';
 import { partnerService } from '../services/api';
@@ -11,6 +10,8 @@ jest.mock('../services/api', () => ({
         getIngestionStatus: jest.fn(),
     }
 }));
+
+const future = { v7_startTransition: true, v7_relativeSplatPath: true };
 
 describe('AdminPage', () => {
     beforeEach(() => {
@@ -25,7 +26,7 @@ describe('AdminPage', () => {
 
     it('renders the admin dashboard completely', () => {
         render(
-            <MemoryRouter>
+            <MemoryRouter future={future}>
                 <AdminPage />
             </MemoryRouter>
         );
@@ -42,13 +43,15 @@ describe('AdminPage', () => {
         });
 
         render(
-            <MemoryRouter>
+            <MemoryRouter future={future}>
                 <AdminPage />
             </MemoryRouter>
         );
 
         const syncBtn = screen.getByRole('button', { name: /Sync Now/i });
-        fireEvent.click(syncBtn);
+        await act(async () => {
+            fireEvent.click(syncBtn);
+        });
 
         await waitFor(() => {
             expect(partnerService.submitGame).toHaveBeenCalledTimes(1);
@@ -63,13 +66,15 @@ describe('AdminPage', () => {
             data: { gameId: 'ext-123', status: 'SUCCESS', message: 'Ingested', internalGameId: 'db-123' }
         });
 
-        jest.advanceTimersByTime(2000);
+        await act(async () => {
+            jest.advanceTimersByTime(2000);
+        });
 
         await waitFor(() => {
             expect(partnerService.getIngestionStatus).toHaveBeenCalledWith('ext-123');
+            expect(screen.getByText('SUCCESS')).toBeInTheDocument();
         });
 
-        expect(await screen.findByText('SUCCESS')).toBeInTheDocument();
         expect(screen.getByText(/Ingested in Catalog/i)).toBeInTheDocument();
     });
 });
