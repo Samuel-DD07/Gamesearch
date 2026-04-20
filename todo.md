@@ -15,7 +15,7 @@
 | Documentation interne développeurs | ⚠️ Partielle | 🟡 Moyenne |
 | Tests unitaires avec contenu réel | ✅ Complétés | ✅ OK |
 | Tests ArchUnit (architecture hexagonale) | ✅ Complétés | ✅ OK |
-| Tests End-to-End | ⚠️ En cours (MR !12) | 🔴 Haute |
+| Tests End-to-End | ✅ Terminés (100% pass) | ✅ OK |
 | Couverture JaCoCo ≥ 70% (objectif final 80%) | ✅ Enforced | ⚠️ À augmenter |
 | Pipeline CI/CD documentée avec artefacts | ✅ Présente | ✅ OK |
 | Rapport qualité / CVE Trivy | ✅ Pipeline OK | ✅ OK |
@@ -132,14 +132,15 @@
 ### ❌ Manquante (critère d'évaluation prof !)
 
 - [ ] **Documentation d'exploitation** *(compléter le README.md)*
+  - [X] Guide des tests complet (`TESTING.md`)
   - [ ] Comment démarrer le projet localement (commandes `docker-compose up`)
   - [ ] Liste complète des endpoints API accessibles
   - [ ] Variables d'environnement requises
   - [ ] Credentials par défaut pour les environnements de test
-- [ ] **Documentation utilisateur** *(succincte — 1 page par profil)*
-  - [ ] Profil "Visiteur/Joueur" — Comment rechercher et filtrer des jeux
-  - [ ] Profil "Partenaire" — Comment s'inscrire et ingérer des jeux via l'API
-  - [ ] Profil "Administrateur" — Comment accéder à l'interface admin et gérer les jeux
+- [X] **Documentation utilisateur** *(succincte — 1 page par profil)*
+  - [X] Profil "Visiteur/Joueur" — Comment rechercher et filtrer des jeux
+  - [X] Profil "Partenaire" — Comment s'inscrire et ingérer des jeux via l'API
+  - [X] Profil "Administrateur" — Comment accéder à l'interface admin et gérer les jeux
 - [ ] **Documentation interne développeurs** *(architecture hexagonale)*
   - [ ] Schéma des couches : `presentation` → `domain` → `data`
   - [ ] Flux Kafka : ingestion partenaire → consumer → status
