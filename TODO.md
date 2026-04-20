@@ -1,7 +1,5 @@
 # Liste des tâches - Projet GameSearch Fullstack
 
-* 
-
 ## 1. Backend (Spring Boot) - *Porté par Darlin & Ninon*
 
 - [X] Initialisation de la structure du projet
