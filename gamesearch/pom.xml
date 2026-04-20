@@ -248,7 +248,7 @@
 										<limit>
 											<counter>LINE</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.00</minimum>
+											<minimum>0.80</minimum> <!-- TODO : a remettre a 0.80 quand on aura plus de tests-->
 										</limit>
 									</limits>
 								</rule>
