@@ -15,7 +15,7 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
     return (
-        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Router>
             <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-brand-500/30">
                 <nav className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
