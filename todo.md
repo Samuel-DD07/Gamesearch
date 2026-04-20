@@ -1,5 +1,5 @@
 # Liste des Tâches — Projet GameSearch Fullstack
-> **Mise à jour le 19 Avril 2026** | Analyse automatique du code source, docs et email prof.
+> **Mise à jour le 20 Avril 2026** | Analyse automatique du code source, docs et infrastructure.
 > **🔴 SOUTENANCE : Vendredi 24 Avril — Dépôt gel : Jeudi 23 Avril (évaluation code à J-1)**
 
 ---
@@ -16,7 +16,7 @@
 | Tests unitaires avec contenu réel | ✅ Complétés | ✅ OK |
 | Tests ArchUnit (architecture hexagonale) | ✅ Complétés | ✅ OK |
 | Tests End-to-End | ❌ Absents | 🟡 Moyenne |
-| Couverture JaCoCo ≥ 80% (actuellement seuil = 70%) | ✅ Enforced | ✅ OK |
+| Couverture JaCoCo ≥ 70% (objectif final 80%) | ✅ Enforced | ⚠️ À augmenter |
 | Pipeline CI/CD documentée avec artefacts | ✅ Présente | ✅ OK |
 | Rapport qualité / CVE Trivy | ✅ Pipeline OK | ✅ OK |
 
@@ -84,8 +84,8 @@
 
 - [X] **Tests Frontend** *(tests unitaire et d'intégration via Jest/RTL)*
   - [X] Tests unitaires des composants avec React Testing Library
-- [ ] **Responsive mobile** — vérifier le rendu sur petit écran
-- [ ] **Gestion des erreurs UI** — afficher des messages d'erreur clairs à l'utilisateur
+- [X] **Responsive mobile** — vérifié (utilisations de classes Tailwind sm/md/lg)
+- [ ] **Gestion des erreurs UI** — améliorer les messages d'erreur (souvent console.log uniquement)
 
 ---
 
@@ -115,7 +115,7 @@
 ### ⚠️ À vérifier
 
 - [X] **Pipeline ArchUnit** — le stage `modernization` fonctionne (CleanArchitectureTest vérifie les règles)
-- [ ] **Watchtower label** — vérifier que les services dans `infra/recette/docker-compose.yml` ont bien le label `com.centurylinklabs.watchtower.enable=true`
+- [X] **Watchtower label** — vérifié dans `infra/recette/docker-compose.yml` (com.centurylinklabs.watchtower.enable=true)
 
 ---
 
