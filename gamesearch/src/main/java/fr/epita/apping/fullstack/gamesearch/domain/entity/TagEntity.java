@@ -1,8 +1,7 @@
 package fr.epita.apping.fullstack.gamesearch.domain.entity;
 
-import lombok.*;
-
 import java.util.UUID;
+import lombok.*;
 
 @Getter
 @Setter
@@ -11,6 +10,6 @@ import java.util.UUID;
 @Builder
 public class TagEntity {
 
-    private UUID id;
-    private String name;
+  private UUID id;
+  private String name;
 }
