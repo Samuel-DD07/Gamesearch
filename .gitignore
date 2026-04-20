@@ -29,4 +29,8 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-todo.md
+*.txt
+GEMINI.md
+*.log
+gamesearch-frontend/playwright-report/index.html
+gamesearch-frontend/test-results/.last-run.json
