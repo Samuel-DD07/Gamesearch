@@ -201,6 +201,7 @@ container_scanning_frontend:
 # STAGE: PROMOTE — main uniquement, déclenchement manuel
 # Promeut les images dev-latest vers prod-latest via copie de manifest
 # (pas de re-pull des layers, opération instantanée sur le registry)
+# Allege le cicd
 # ==========================================
 docker-promote-prod:
   stage: promote
