@@ -162,7 +162,7 @@ services:
     container_name: gamesearch-frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3000:80"
     environment:
       - REACT_APP_API_URL=https://api.gamesearch.basteproductions.fr
     networks:
