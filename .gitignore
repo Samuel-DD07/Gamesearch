@@ -21,12 +21,16 @@ yarn-error.log*
 .idea/
 *.iml
 .vscode/
-.project
-.classpath
-.settings/
+24: .project
+25: .classpath
+26: .settings/
 
 # OS
 .DS_Store
 Thumbs.db
 
-todo.md
+*.txt
+GEMINI.md
+*.log
+gamesearch-frontend/playwright-report/index.html
+gamesearch-frontend/test-results/.last-run.json
