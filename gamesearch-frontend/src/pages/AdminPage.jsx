@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Database, Zap, ShieldCheck, Activity, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Database, Zap, Activity, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { partnerService } from '../services/api';
 
 const AdminPage = () => {

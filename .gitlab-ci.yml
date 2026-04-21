@@ -1,32 +1,51 @@
-# GameSearch CI/CD Pipeline
 include:
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
 
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "dev"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH =~ /^infra\//
+
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""
-  # Chemins exacts pour registry
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_VERIFY: 1
+  DOCKER_CERT_PATH: "/certs/client"
   BACKEND_IMAGE: $CI_REGISTRY_IMAGE/gamesearch-backend
   FRONTEND_IMAGE: $CI_REGISTRY_IMAGE/gamesearch-frontend
   TRIVY_VERSION: "0.49.0"
-  SAST_STAGE: audit
+  COMPOSE_VERSION: "2.24.6"
 
-cache:
-  paths:
-    - .m2/repository
-    - gamesearch-frontend/node_modules/
+.cache-maven: &cache-maven
+  cache:
+    key:
+      files:
+        - gamesearch/pom.xml
+    paths:
+      - .m2/repository
+
+.cache-node: &cache-node
+  cache:
+    key:
+      files:
+        - gamesearch-frontend/package-lock.json
+    paths:
+      - gamesearch-frontend/node_modules/
 
 stages:
-  - audit          # Sécurité statique (Secrets, SAST)
-  - lint           # Formatage et Qualité (Spotless, ESLint)
-  - test           # Tests unitaires et Couverture (JaCoCo)
-  - modernization  # Validation Architecture (ArchUnit)
-  - build          # Packaging Multi-Arch (Docker Buildx)
-  - security       # Scan de vulnérabilités (Trivy)
-  - promote        # Promotion vers Production
+  - audit
+  - lint
+  - test
+  - build
+  - smoke
+  - security
+  - promote
 
 # ==========================================
 # STAGE: AUDIT
@@ -34,9 +53,11 @@ stages:
 secret_detection:
   stage: audit
   extends: .secret-analyzer
-  rules:
-    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^infra\//
+  needs: []
 
+sast:
+  stage: audit
+  needs: []
 
 # ==========================================
 # STAGE: LINT
@@ -44,23 +65,22 @@ secret_detection:
 backend-format:
   stage: lint
   image: maven:3.9.6-eclipse-temurin-21
+  needs: []
+  <<: *cache-maven
   script:
     - cd gamesearch
-    - mvn spotless:check
-  rules:
-    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^infra\//
+    - chmod +x mvnw
+    - ./mvnw spotless:check
 
 frontend-lint:
   stage: lint
   image: node:20-alpine
+  needs: []
+  <<: *cache-node
   script:
     - cd gamesearch-frontend
     - npm ci
-    # Installation dynamique des dépendances de linting manquantes dans le lockfile
-    - npm install --no-save eslint@^8.57.0 eslint-config-react-app eslint-plugin-react --legacy-peer-deps
     - npm run lint
-  rules:
-    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^infra\//
 
 # ==========================================
 # STAGE: TEST
@@ -68,59 +88,104 @@ frontend-lint:
 backend-test:
   stage: test
   image: maven:3.9.6-eclipse-temurin-21
+  needs: [backend-format]
+  <<: *cache-maven
   script:
     - cd gamesearch
-    - mvn clean verify
+    - chmod +x mvnw
+    - ./mvnw clean verify
   artifacts:
     reports:
       junit: gamesearch/target/surefire-reports/TEST-*.xml
     paths:
       - gamesearch/target/site/jacoco/
     expire_in: 1 week
-  rules:
-    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^infra\//
 
-# ==========================================
-# STAGE: MODERNIZATION (ArchUnit)
-# ==========================================
-architecture-modernization:
-  stage: modernization
-  image: maven:3.9.6-eclipse-temurin-21
+frontend-build:
+  stage: test
+  image: node:20-alpine
+  needs: [frontend-lint]
+  <<: *cache-node
   script:
-    - cd gamesearch
-    # Exécution ciblée des tests ArchUnit pour garantir l'usage de Java 21 Records 
-    # et le respect de la Clean Architecture.
-    - mvn test -Dtest="*Arch*" -Dsurefire.failIfNoSpecifiedTests=false
-  rules:
-    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^infra\//
+    - cd gamesearch-frontend
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - gamesearch-frontend/build/
+    expire_in: 1 week
+
+frontend-test:
+  stage: test
+  image: node:20-alpine
+  needs: [frontend-lint]
+  <<: *cache-node
+  variables:
+    CI: "true"
+  script:
+    - cd gamesearch-frontend
+    - npm ci
+    - npm test -- --watchAll=false --coverage --passWithNoTests
+  artifacts:
+    paths:
+      - gamesearch-frontend/coverage/
+    expire_in: 1 week
 
 # ==========================================
-# STAGE: BUILD (Docker Multi-Arch)
+# STAGE: BUILD — dev uniquement
+# main passe par le stage promote (retag sans rebuild)
 # ==========================================
 docker-build:
   stage: build
   image: docker:24.0.5
+  needs: [backend-test, frontend-build, frontend-test]
   services:
-    - docker:24.0.5-dind
+    - name: docker:24.0.5-dind
+      variables:
+        DOCKER_TLS_CERTDIR: "/certs"
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker buildx create --use
   script:
-    # Génération d'un tag unique (Pipeline ID + Timestamp) pour une traçabilité parfaite dans le registre
-    - export RANDOM_TAG="${CI_PIPELINE_IID}-$(date +%s)"
-    
-    # Build Backend
-    - docker buildx build --platform linux/amd64,linux/arm64 -t $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA -t $BACKEND_IMAGE:dev-latest -t $BACKEND_IMAGE:$RANDOM_TAG --push gamesearch
-
-    # Build Frontend
-    - docker buildx build --platform linux/amd64,linux/arm64 -t $FRONTEND_IMAGE:$CI_COMMIT_SHORT_SHA -t $FRONTEND_IMAGE:dev-latest -t $FRONTEND_IMAGE:$RANDOM_TAG --push gamesearch-frontend
+    - docker buildx build --platform linux/amd64,linux/arm64
+        -t $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA
+        -t $BACKEND_IMAGE:dev-latest
+        --push gamesearch
+    - docker buildx build --platform linux/amd64,linux/arm64
+        -t $FRONTEND_IMAGE:$CI_COMMIT_SHORT_SHA
+        -t $FRONTEND_IMAGE:dev-latest
+        --push gamesearch-frontend
   rules:
-    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH =~ /^infra\//
+    - if: $CI_COMMIT_BRANCH == "dev"
 
 # ==========================================
-# STAGE: SECURITY (Trivy Scan) 
+# STAGE: SMOKE — dev uniquement
 # ==========================================
-container_scanning:
+smoke-test:
+  stage: smoke
+  image: docker:24.0.5
+  needs: [docker-build]
+  services:
+    - name: docker:24.0.5-dind
+      variables:
+        DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - mkdir -p /usr/local/lib/docker/cli-plugins
+    - wget -qO /usr/local/lib/docker/cli-plugins/docker-compose
+        "https://github.com/docker/compose/releases/download/v${COMPOSE_VERSION}/docker-compose-linux-x86_64"
+    - chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+  script:
+    - docker compose -f gamesearch/docker-compose.yml -f gamesearch/docker-compose.ci.yml up --wait --timeout 120 backend frontend
+  after_script:
+    - docker compose -f gamesearch/docker-compose.yml -f gamesearch/docker-compose.ci.yml down -v --remove-orphans
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+
+# ==========================================
+# STAGE: SECURITY — dev uniquement
+# ==========================================
+.trivy-scan:
   stage: security
   image:
     name: docker.io/aquasec/trivy:${TRIVY_VERSION}
@@ -129,38 +194,40 @@ container_scanning:
     TRIVY_USERNAME: "$CI_REGISTRY_USER"
     TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
     TRIVY_AUTH_URL: "$CI_REGISTRY"
-  script:
-    # Analyse Backend
-    - trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA
-    # Analyse Frontend
-    - trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress $FRONTEND_IMAGE:$CI_COMMIT_SHORT_SHA
   rules:
-    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH =~ /^infra\//
+    - if: $CI_COMMIT_BRANCH == "dev"
+
+container_scanning_backend:
+  extends: .trivy-scan
+  needs: [smoke-test]
+  script:
+    - trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA
+
+container_scanning_frontend:
+  extends: .trivy-scan
+  needs: [smoke-test]
+  script:
+    - trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress $FRONTEND_IMAGE:$CI_COMMIT_SHORT_SHA
 
 # ==========================================
-# STAGE: PROMOTE (Main -> Production)
+# STAGE: PROMOTE — main uniquement, déclenchement manuel
+# Promeut les images dev-latest vers prod-latest via copie de manifest
+# (pas de re-pull des layers, opération instantanée sur le registry)
 # ==========================================
 docker-promote-prod:
   stage: promote
   image: docker:24.0.5
+  needs: [backend-test, frontend-build, frontend-test]
   services:
-    - docker:24.0.5-dind
+    - name: docker:24.0.5-dind
+      variables:
+        DOCKER_TLS_CERTDIR: "/certs"
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker buildx create --use
   script:
-    # Récupérer les images validées en Recette (dev-latest)
-    - docker pull $BACKEND_IMAGE:dev-latest
-    - docker pull $FRONTEND_IMAGE:dev-latest
-    
-    # Rétiqueter les images pour la Production
-    - docker tag $BACKEND_IMAGE:dev-latest $BACKEND_IMAGE:prod-latest
-    - docker tag $FRONTEND_IMAGE:dev-latest $FRONTEND_IMAGE:prod-latest
-    - docker tag $BACKEND_IMAGE:dev-latest $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA
-    
-    # Pousser les tags en Production
-    - docker push $BACKEND_IMAGE:prod-latest
-    - docker push $FRONTEND_IMAGE:prod-latest
-    - docker push $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker buildx imagetools create -t $BACKEND_IMAGE:prod-latest $BACKEND_IMAGE:dev-latest
+    - docker buildx imagetools create -t $FRONTEND_IMAGE:prod-latest $FRONTEND_IMAGE:dev-latest
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       when: manual
