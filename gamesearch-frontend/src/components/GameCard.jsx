@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Star, Monitor, Gamepad2, Layers } from 'lucide-react';
+import { Star, Monitor, Gamepad2 } from 'lucide-react';
 
 const GameCard = ({ game }) => {
     return (
