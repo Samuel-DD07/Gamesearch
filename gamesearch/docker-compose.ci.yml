@@ -1,0 +1,29 @@
+# Override CI : images du registry GitLab, réseau edge recréé localement, healthchecks backend/frontend.
+# Usage : docker compose -f docker-compose.yml -f docker-compose.ci.yml up --wait backend frontend
+services:
+  kafka-ui:
+    profiles:
+      - tools
+
+  backend:
+    image: ${BACKEND_IMAGE}:${CI_COMMIT_SHORT_SHA}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 8
+      start_period: 45s
+
+  frontend:
+    image: ${FRONTEND_IMAGE}:${CI_COMMIT_SHORT_SHA}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:80 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+networks:
+  edge:
+    external: false
+    name: gamesearch_edge_ci

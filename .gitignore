@@ -21,9 +21,9 @@ yarn-error.log*
 .idea/
 *.iml
 .vscode/
-.project
-.classpath
-.settings/
+24: .project
+25: .classpath
+26: .settings/
 
 # OS
 .DS_Store
