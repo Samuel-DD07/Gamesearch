@@ -205,7 +205,7 @@ container_scanning_frontend:
 docker-promote-prod:
   stage: promote
   image:
-    name: gcr.io/go-containerregistry/crane:latest
+    name: gcr.io/go-containerregistry/crane:debug
     entrypoint: [""]
   needs: [backend-test, frontend-build, frontend-test]
   script:
