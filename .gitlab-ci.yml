@@ -201,11 +201,12 @@ container_scanning_frontend:
 # STAGE: PROMOTE — main uniquement, déclenchement manuel
 # Promeut les images dev-latest vers prod-latest via copie de manifest
 # (pas de re-pull des layers, opération instantanée sur le registry)
+# Allege le cicd
 # ==========================================
 docker-promote-prod:
   stage: promote
   image:
-    name: gcr.io/go-containerregistry/crane:latest
+    name: gcr.io/go-containerregistry/crane:debug
     entrypoint: [""]
   needs: [backend-test, frontend-build, frontend-test]
   script:
