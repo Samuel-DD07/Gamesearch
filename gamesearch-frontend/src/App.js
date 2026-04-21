@@ -14,7 +14,7 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const Navbar = () => {
-    const location = useLocation(); // Trigger re-render on navigation
+    useLocation(); // Trigger re-render on navigation
     
     return (
         <nav className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
