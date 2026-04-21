@@ -103,7 +103,7 @@ backend-test:
     - chmod +x mvnw
     - ./mvnw clean test
     - ./mvnw jacoco:report
-    - ./mvnw jacoco:check # Seuil 80% configuré dans le pom.xml
+    - ./mvnw jacoco:check # Seuil 80% configuré dans le pom.xml TODO : a remettre a 0.80 quand on aura plus de tests
   artifacts:
     reports:
       junit: target/surefire-reports/TEST-*.xml
