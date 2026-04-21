@@ -204,7 +204,9 @@ container_scanning_frontend:
 # ==========================================
 docker-promote-prod:
   stage: promote
-  image: gcr.io/go-containerregistry/crane:latest
+  image:
+    name: gcr.io/go-containerregistry/crane:latest
+    entrypoint: [""]
   needs: [backend-test, frontend-build, frontend-test]
   script:
     - crane auth login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
