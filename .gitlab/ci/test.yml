@@ -9,7 +9,9 @@
 backend-test:
   stage: test
   image: maven:3.9.6-eclipse-temurin-21
-  extends: .retry-on-flake
+  extends:
+    - .retry-on-flake
+    - .changes-code
   # On bloque les tests si le format n'est pas valide : inutile de lancer
   # une suite de tests sur du code qui sera de toute façon refusé au merge.
   needs: [backend-format]
@@ -45,7 +47,9 @@ backend-test:
 frontend-build:
   stage: test
   image: node:20-alpine
-  extends: .retry-on-flake
+  extends:
+    - .retry-on-flake
+    - .changes-code
   # Le build ne sert à rien si le lint échoue : un code qui ne passe pas ESLint
   # ne sera jamais mergé, autant ne pas gaspiller les ressources.
   needs: [frontend-lint]
@@ -70,7 +74,9 @@ frontend-build:
 frontend-test:
   stage: test
   image: node:20-alpine
-  extends: .retry-on-flake
+  extends:
+    - .retry-on-flake
+    - .changes-code
   needs: [frontend-lint]
   interruptible: true
   timeout: 10 minutes

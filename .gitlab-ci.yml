@@ -92,12 +92,20 @@ stages:
       - scheduler_failure
 
 # Déclenche les jobs lint/test uniquement si des fichiers de code ont changé.
-# Un commit qui ne touche qu'un README ne doit pas relancer tout le pipeline.
-# Les deux stacks sont groupées volontairement : backend et frontend alimentent
-# le même docker-build, les traiter séparément casserait la chaîne needs.
+# Sur dev et main on tourne toujours : la stabilité prime sur l'optimisation.
+# Un merge commit (ex: infra → dev) ne touche pas forcément de fichiers applicatifs,
+# ce qui rendrait lint et test absents du pipeline et casserait la chaîne needs.
+# L'optimisation par changement de fichiers est donc réservée aux MR uniquement :
+# un MR qui ne touche qu'un README ou un fichier de config ne justifie pas
+# de relancer toute la suite de tests.
 .changes-code:
   rules:
-    - changes:
+    - if: $CI_COMMIT_BRANCH == "dev"
+      when: always
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
         - gamesearch/**/*
         - gamesearch-frontend/**/*
         - .gitlab-ci.yml
