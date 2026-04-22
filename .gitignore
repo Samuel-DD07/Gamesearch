@@ -38,3 +38,7 @@ gamesearch-frontend/test-results/.last-run.json
 # documentation
 documentation/
 documentations/
+
+# resultats tests
+gamesearch-frontend/playwright-report/
+gamesearch-frontend/test-results/

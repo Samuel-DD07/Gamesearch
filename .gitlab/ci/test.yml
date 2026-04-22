@@ -94,7 +94,7 @@ frontend-test:
   script:
     - cd gamesearch-frontend
     - npm ci
-    - npm test -- --watchAll=false --coverage --passWithNoTests
+    - npm test -- --watchAll=false --coverage
   artifacts:
     when: always
     reports:
