@@ -10,6 +10,7 @@ include:
   - local: .gitlab/ci/test.yml
   - local: .gitlab/ci/build.yml
   - local: .gitlab/ci/smoke.yml
+  - local: .gitlab/ci/e2e.yml
   - local: .gitlab/ci/security.yml
   - local: .gitlab/ci/promote.yml
 
@@ -52,6 +53,7 @@ stages:
   - test
   - build
   - smoke
+  - e2e
   - security
   - promote
 
