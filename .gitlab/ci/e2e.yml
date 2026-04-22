@@ -1,0 +1,55 @@
+# =============================================================================
+# STAGE: E2E — branche dev uniquement
+# Lance les tests Playwright contre les vraies images Docker buildées et
+# validées par le smoke-test. Le container Playwright tourne dans le même
+# réseau Docker que frontend et backend — il les atteint par leur hostname
+# de service Compose, sans avoir besoin d'exposer de ports sur le runner.
+#
+# --exit-code-from playwright : quand le container Playwright se termine,
+# docker compose renvoie son exit code comme exit code de la commande.
+# Si un test échoue, le job échoue. Les autres containers s'arrêtent automatiquement.
+# =============================================================================
+
+e2e:
+  stage: e2e
+  image: docker:24.0.5
+  extends: .retry-on-flake
+  needs: [smoke-test]
+  timeout: 20 minutes
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - mkdir -p /usr/local/lib/docker/cli-plugins
+    - wget -qO /usr/local/lib/docker/cli-plugins/docker-compose
+        "https://github.com/docker/compose/releases/download/v${COMPOSE_VERSION}/docker-compose-linux-x86_64"
+    - chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+  script:
+    - docker compose
+        -f gamesearch/docker-compose.yml
+        -f gamesearch/docker-compose.ci.yml
+        -f gamesearch/docker-compose.e2e.yml
+        up --exit-code-from playwright playwright
+  after_script:
+    # On copie les artifacts depuis le container Playwright avant de tout supprimer.
+    # docker compose cp fonctionne sur les containers arrêtés — les rapports sont préservés
+    # même si le job échoue.
+    - docker compose
+        -f gamesearch/docker-compose.yml
+        -f gamesearch/docker-compose.ci.yml
+        -f gamesearch/docker-compose.e2e.yml
+        cp playwright:/app/playwright-report ./playwright-report || true
+    - docker compose
+        -f gamesearch/docker-compose.yml
+        -f gamesearch/docker-compose.ci.yml
+        -f gamesearch/docker-compose.e2e.yml
+        down -v --remove-orphans
+  artifacts:
+    # "always" : on veut les screenshots et vidéos même quand les tests échouent,
+    # c'est justement dans ce cas qu'ils sont utiles.
+    when: always
+    paths:
+      - playwright-report/
+    reports:
+      junit: playwright-report/results.xml
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
