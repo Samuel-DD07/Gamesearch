@@ -1,0 +1,51 @@
+# =============================================================================
+# STAGE: BUILD — branche dev uniquement
+# Sur main, on ne rebuild pas : on promeut l'image dev-latest via le stage promote.
+# Ça garantit que ce qui part en prod est exactement ce qui a été validé en dev.
+#
+# resource_group empêche deux builds simultanés sur dev-latest : sans ça, deux
+# pipelines concurrents peuvent se pousser dessus et corrompre le tag.
+#
+# interruptible: false intentionnel — annuler un push en cours sur le registry
+# laisserait un manifeste partiel et casserait le smoke test suivant.
+# =============================================================================
+
+docker-build:
+  stage: build
+  image: docker:24.0.5
+  # TODO: épingler par digest SHA256 pour garantir l'immuabilité de l'image.
+  # Commande : docker buildx imagetools inspect docker:24.0.5 | grep Digest
+  # Exemple  : docker:24.0.5@sha256:<digest>
+  extends: .retry-on-flake
+  # On attend que les trois jobs de test passent : un seul échec suffit à bloquer le build.
+  # Pas la peine de pousser une image cassée sur le registry.
+  needs: [backend-test, frontend-build, frontend-test]
+  timeout: 25 minutes
+  resource_group: docker-dev
+  environment:
+    name: recette
+    url: https://gamesearch-rec.basteproductions.fr
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker buildx create --use
+  script:
+    # On publie deux tags : le SHA court pour la traçabilité et dev-latest pour le smoke test.
+    - docker buildx build --platform linux/amd64,linux/arm64
+        -t $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA
+        -t $BACKEND_IMAGE:dev-latest
+        --push gamesearch
+    - docker buildx build --platform linux/amd64,linux/arm64
+        -t $FRONTEND_IMAGE:$CI_COMMIT_SHORT_SHA
+        -t $FRONTEND_IMAGE:dev-latest
+        --push gamesearch-frontend
+  after_script:
+    # En cas d'échec, on inspecte le manifeste pour savoir si le problème vient
+    # d'une plateforme spécifique (amd64 vs arm64) ou d'un layer particulier.
+    - docker buildx imagetools inspect $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA 2>&1 | tee build-manifest.txt || true
+  artifacts:
+    when: on_failure
+    paths:
+      - build-manifest.txt
+    expire_in: 3 days
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"

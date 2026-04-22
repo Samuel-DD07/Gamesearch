@@ -1,9 +1,22 @@
+# Les templates GitLab gèrent SAST, secrets et dépendances sans qu'on ait à maintenir
+# ces scripts nous-mêmes. Ils apportent aussi les mises à jour de règles de détection
+# automatiquement à chaque nouvelle version de GitLab.
 include:
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  - local: .gitlab/ci/audit.yml
+  - local: .gitlab/ci/lint.yml
+  - local: .gitlab/ci/test.yml
+  - local: .gitlab/ci/build.yml
+  - local: .gitlab/ci/smoke.yml
+  - local: .gitlab/ci/security.yml
+  - local: .gitlab/ci/promote.yml
 
+# Le nom dynamique remplace "Pipeline #1234" par quelque chose de lisible
+# dans la liste GitLab, surtout utile quand plusieurs pipelines tournent en même temps.
 workflow:
+  name: '$CI_COMMIT_BRANCH — $CI_COMMIT_SHORT_SHA ($CI_PIPELINE_SOURCE)'
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "dev"
@@ -11,29 +24,28 @@ workflow:
     - if: $CI_COMMIT_BRANCH =~ /^infra\//
 
 variables:
+  # Maven télécharge les dépendances dans le workspace plutôt que dans ~/.m2
+  # ce qui permet au cache GitLab de les persister entre les jobs.
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+  # -B = batch mode (pas de prompts interactifs), --no-transfer-progress = logs lisibles en CI.
+  MAVEN_CLI_OPTS: "-B --no-transfer-progress --fail-at-end"
+
+  # overlay2 est le driver de stockage Docker le plus performant pour la gestion
+  # des layers d'images. Indispensable dans un contexte de builds fréquents.
   DOCKER_DRIVER: overlay2
+
   BACKEND_IMAGE: $CI_REGISTRY_IMAGE/gamesearch-backend
   FRONTEND_IMAGE: $CI_REGISTRY_IMAGE/gamesearch-frontend
+
+  # On fixe les versions de Trivy et Compose pour éviter qu'une mise à jour
+  # silencieuse casse le pipeline un vendredi soir.
   TRIVY_VERSION: "0.49.0"
   COMPOSE_VERSION: "2.24.6"
 
-.cache-maven: &cache-maven
-  cache:
-    key:
-      files:
-        - gamesearch/pom.xml
-    paths:
-      - .m2/repository
-
-.cache-node: &cache-node
-  cache:
-    key:
-      files:
-        - gamesearch-frontend/package-lock.json
-    paths:
-      - gamesearch-frontend/node_modules/
-
+# L'ordre des stages reflète le principe "fail fast" : on détecte les problèmes
+# les moins coûteux à corriger en premier (sécurité statique, style) avant de
+# lancer des opérations longues comme le build ou le smoke test.
 stages:
   - audit
   - lint
@@ -43,176 +55,52 @@ stages:
   - security
   - promote
 
-# ==========================================
-# STAGE: AUDIT
-# ==========================================
-secret_detection:
-  stage: audit
-  extends: .secret-analyzer
-  needs: []
+# =============================================================================
+# TEMPLATES PARTAGÉS
+# Ces jobs cachés (préfixe ".") sont réutilisés via "extends" dans les sous-fichiers.
+# Les YAML anchors étant limités au fichier courant, extends est le seul moyen
+# de partager de la configuration entre fichiers inclus.
+# =============================================================================
 
-sast:
-  stage: audit
-  needs: []
-
-# ==========================================
-# STAGE: LINT
-# ==========================================
-backend-format:
-  stage: lint
-  image: maven:3.9.6-eclipse-temurin-21
-  needs: []
-  <<: *cache-maven
-  script:
-    - cd gamesearch
-    - chmod +x mvnw
-    - ./mvnw spotless:check
-
-frontend-lint:
-  stage: lint
-  image: node:20-alpine
-  needs: []
-  <<: *cache-node
-  script:
-    - cd gamesearch-frontend
-    - npm ci
-    - npm run lint
-
-# ==========================================
-# STAGE: TEST
-# ==========================================
-backend-test:
-  stage: test
-  image: maven:3.9.6-eclipse-temurin-21
-  needs: [backend-format]
-  <<: *cache-maven
-  script:
-    - cd gamesearch
-    - chmod +x mvnw
-    - ./mvnw clean verify
-  artifacts:
-    reports:
-      junit: gamesearch/target/surefire-reports/TEST-*.xml
+# Le cache est invalidé automatiquement dès que le fichier de dépendances change.
+# Pas besoin de gérer la clé manuellement : si pom.xml ou package-lock.json bougent,
+# GitLab reconstruit le cache proprement.
+.cache-maven:
+  cache:
+    key:
+      files:
+        - gamesearch/pom.xml
     paths:
-      - gamesearch/target/site/jacoco/
-    expire_in: 1 week
+      - .m2/repository
 
-frontend-build:
-  stage: test
-  image: node:20-alpine
-  needs: [frontend-lint]
-  <<: *cache-node
-  script:
-    - cd gamesearch-frontend
-    - npm ci
-    - npm run build
-  artifacts:
+.cache-node:
+  cache:
+    key:
+      files:
+        - gamesearch-frontend/package-lock.json
     paths:
-      - gamesearch-frontend/build/
-    expire_in: 1 week
+      - gamesearch-frontend/node_modules/
 
-frontend-test:
-  stage: test
-  image: node:20-alpine
-  needs: [frontend-lint]
-  <<: *cache-node
-  variables:
-    CI: "true"
-  script:
-    - cd gamesearch-frontend
-    - npm ci
-    - npm test -- --watchAll=false --coverage --passWithNoTests
-  artifacts:
-    paths:
-      - gamesearch-frontend/coverage/
-    expire_in: 1 week
+# Les échecs réseau (registry surchargé, timeout npm, runner instable) sont transitoires.
+# max: 2 relances automatiquement sans intervention humaine sur ces cas connus.
+.retry-on-flake:
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - scheduler_failure
 
-# ==========================================
-# STAGE: BUILD — dev uniquement
-# main passe par le stage promote (retag sans rebuild)
-# ==========================================
-docker-build:
-  stage: build
-  image: docker:24.0.5
-  needs: [backend-test, frontend-build, frontend-test]
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker buildx create --use
-  script:
-    - docker buildx build --platform linux/amd64,linux/arm64
-        -t $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA
-        -t $BACKEND_IMAGE:dev-latest
-        --push gamesearch
-    - docker buildx build --platform linux/amd64,linux/arm64
-        -t $FRONTEND_IMAGE:$CI_COMMIT_SHORT_SHA
-        -t $FRONTEND_IMAGE:dev-latest
-        --push gamesearch-frontend
+# Déclenche les jobs lint/test uniquement si des fichiers de code ont changé.
+# Un commit qui ne touche qu'un README ne doit pas relancer tout le pipeline.
+# Les deux stacks sont groupées volontairement : backend et frontend alimentent
+# le même docker-build, les traiter séparément casserait la chaîne needs.
+.changes-code:
   rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
-
-# ==========================================
-# STAGE: SMOKE — dev uniquement
-# ==========================================
-smoke-test:
-  stage: smoke
-  image: docker:24.0.5
-  needs: [docker-build]
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - mkdir -p /usr/local/lib/docker/cli-plugins
-    - wget -qO /usr/local/lib/docker/cli-plugins/docker-compose
-        "https://github.com/docker/compose/releases/download/v${COMPOSE_VERSION}/docker-compose-linux-x86_64"
-    - chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
-  script:
-    - docker compose -f gamesearch/docker-compose.yml -f gamesearch/docker-compose.ci.yml up --wait --timeout 120 backend frontend
-  after_script:
-    - docker compose -f gamesearch/docker-compose.yml -f gamesearch/docker-compose.ci.yml down -v --remove-orphans
-  rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
-
-# ==========================================
-# STAGE: SECURITY — dev uniquement
-# ==========================================
-.trivy-scan:
-  stage: security
-  image:
-    name: docker.io/aquasec/trivy:${TRIVY_VERSION}
-    entrypoint: [""]
-  variables:
-    TRIVY_USERNAME: "$CI_REGISTRY_USER"
-    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
-    TRIVY_AUTH_URL: "$CI_REGISTRY"
-  rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
-
-container_scanning_backend:
-  extends: .trivy-scan
-  needs: [smoke-test]
-  script:
-    - trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA
-
-container_scanning_frontend:
-  extends: .trivy-scan
-  needs: [smoke-test]
-  script:
-    - trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress $FRONTEND_IMAGE:$CI_COMMIT_SHORT_SHA
-
-# ==========================================
-# STAGE: PROMOTE — main uniquement, déclenchement manuel
-# Promeut les images dev-latest vers prod-latest via copie de manifest
-# (pas de re-pull des layers, opération instantanée sur le registry)
-# Allege le cicd
-# ==========================================
-docker-promote-prod:
-  stage: promote
-  image:
-    name: gcr.io/go-containerregistry/crane:debug
-    entrypoint: [""]
-  needs: [backend-test, frontend-build, frontend-test]
-  script:
-    - crane auth login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - crane copy --all-tags=false $BACKEND_IMAGE:dev-latest $BACKEND_IMAGE:prod-latest
-    - crane copy --all-tags=false $FRONTEND_IMAGE:dev-latest $FRONTEND_IMAGE:prod-latest
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-      when: manual
+    - changes:
+        - gamesearch/**/*
+        - gamesearch-frontend/**/*
+        - .gitlab-ci.yml
+        - .gitlab/ci/**/*
+      when: always
+    - when: never
