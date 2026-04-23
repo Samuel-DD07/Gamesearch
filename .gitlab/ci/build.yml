@@ -27,7 +27,9 @@ docker-build:
     url: https://gamesearch-rec.basteproductions.fr
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker buildx create --use
+    # Le nom inclut le CI_JOB_ID pour éviter les conflits si deux jobs tournent en parallèle
+    # et pour pouvoir cibler précisément ce builder dans le after_script.
+    - docker buildx create --use --name ci-builder-$CI_JOB_ID
   script:
     # On publie deux tags : le SHA court pour la traçabilité et dev-latest pour le smoke test.
     - docker buildx build --platform linux/amd64,linux/arm64
@@ -42,6 +44,9 @@ docker-build:
     # En cas d'échec, on inspecte le manifeste pour savoir si le problème vient
     # d'une plateforme spécifique (amd64 vs arm64) ou d'un layer particulier.
     - docker buildx imagetools inspect $BACKEND_IMAGE:$CI_COMMIT_SHORT_SHA 2>&1 | tee build-manifest.txt || true
+    # Supprime le builder créé en before_script. Le "|| true" évite qu'un échec ici
+    # masque le vrai exit code du job si le build a échoué.
+    - docker buildx rm ci-builder-$CI_JOB_ID || true
   artifacts:
     when: on_failure
     paths:

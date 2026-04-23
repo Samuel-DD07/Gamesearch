@@ -8,7 +8,7 @@
 
 ## 1. Résumé Exécutif
 
-L'application **GameSearch** présente une posture de sécurité mature, alignée sur les standards industriels pour une application cloud-native. L'utilisation d'une architecture hexagonale facilite l'isolation des composants de sécurité et le respect du principe de moindre privilège.
+L'application **GameSearch** présente une posture de sécurité mature, alignée sur les standards industriels pour une application cloud-native. L'utilisation d'une architecture En Couches (N-Tiers) facilite l'isolation des composants de sécurité et le respect du principe de moindre privilège.
 
 **Score Global : 18/20**
 

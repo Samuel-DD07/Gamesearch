@@ -4,9 +4,9 @@ Ce document détaille les choix de conception technique et l'organisation du cod
 
 ---
 
-## 1. Architecture Hexagonale (Backend)
+## 1. Architecture En Couches (N-Tiers) (Backend)
 
-Le backend est structuré selon les principes de l'**Architecture Hexagonale** (ou Ports & Adapteurs). Cette approche garantit une isolation totale de la logique métier vis-à-vis des frameworks et des détails d'infrastructure.
+Le backend est structuré selon les principes de l'**Architecture En Couches (N-Tiers)** (ou Ports & Adapteurs). Cette approche garantit une isolation totale de la logique métier vis-à-vis des frameworks et des détails d'infrastructure.
 
 ### Schéma des Couches
 ```mermaid
@@ -99,4 +99,4 @@ erDiagram
 
 ## 4. Conformité
 
-La structure hexagonale est vérifiée automatiquement à chaque build via des tests **ArchUnit**, garantissant qu'aucune violation de dépendance (ex: appel direct de la Database dans le Controller) ne soit introduite.
+La structure En Couches (N-Tiers) est vérifiée automatiquement à chaque build via des tests **ArchUnit**, garantissant qu'aucune violation de dépendance (ex: appel direct de la Database dans le Controller) ne soit introduite.

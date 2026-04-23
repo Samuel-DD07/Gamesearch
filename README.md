@@ -6,7 +6,7 @@
 [![Frontend](https://img.shields.io/badge/Frontend-React%2018-blue.svg)]()
 [![Kafka](https://img.shields.io/badge/Messaging-Kafka%20KRaft-black.svg)]()
 
-> **GameSearch** est une plateforme fullstack de référencement de jeux vidéo conçue pour une haute performance et une scalabilité horizontale. Ce projet met en œuvre une **Architecture Hexagonale (Clean Architecture)** sur le backend et une gestion asynchrone des flux partenaires via **Apache Kafka**.
+> **GameSearch** est une plateforme fullstack de référencement de jeux vidéo conçue pour une haute performance et une scalabilité horizontale. Ce projet met en œuvre une **Architecture En Couches (N-Tiers) (Clean Architecture)** sur le backend et une gestion asynchrone des flux partenaires via **Apache Kafka**.
 
 ---
 
