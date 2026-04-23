@@ -1,5 +1,5 @@
 # Liste des Tâches — Projet GameSearch Fullstack
-> **Mise à jour le 20 Avril 2026** | Analyse automatique du code source, docs et infrastructure.
+> **Mise à jour le 23 Avril 2026** | Audit final avant gel du dépôt (Soutenance J-1).
 > **🔴 SOUTENANCE : Vendredi 24 Avril — Dépôt gel : Jeudi 23 Avril (évaluation code à J-1)**
 
 ---
@@ -10,11 +10,11 @@
 
 | Critère | Statut | Priorité |
 |---|---|---|
-| Documentation d'exploitation (déploiement, endpoints) | ⚠️ Partielle | 🔴 Haute |
-| Documentation utilisateur (par profil) | ❌ Absente | 🔴 Haute |
-| Documentation interne développeurs | ⚠️ Partielle | 🟡 Moyenne |
+| Documentation d'exploitation (déploiement, endpoints) | ✅ Complétée | ✅ OK |
+| Documentation utilisateur (par profil) | ✅ Complétée | ✅ OK |
+| Documentation interne développeurs | ✅ Complétée | ✅ OK |
 | Tests unitaires avec contenu réel | ✅ Complétés | ✅ OK |
-| Tests ArchUnit (architecture hexagonale) | ✅ Complétés | ✅ OK |
+| Tests ArchUnit (architecture En Couches (N-Tiers)) | ✅ Complétés | ✅ OK |
 | Tests End-to-End | ✅ Terminés (100% pass) | ✅ OK |
 | Couverture JaCoCo ≥ 70% (objectif final 80%) | ✅ Enforced | ⚠️ À augmenter |
 | Pipeline CI/CD documentée avec artefacts | ✅ Présente | ✅ OK |
@@ -131,40 +131,36 @@
 
 ### ❌ Manquante (critère d'évaluation prof !)
 
-- [ ] **Documentation d'exploitation** *(compléter le README.md)*
+- [X] **Documentation d'exploitation** (voir `DOCUMENTATION_EXPLOITATION.md`)
   - [X] Guide des tests complet (`TESTING.md`)
-  - [ ] Comment démarrer le projet localement (commandes `docker-compose up`)
-  - [ ] Liste complète des endpoints API accessibles
-  - [ ] Variables d'environnement requises
-  - [ ] Credentials par défaut pour les environnements de test
-- [X] **Documentation utilisateur** *(succincte — 1 page par profil)*
-  - [X] Profil "Visiteur/Joueur" — Comment rechercher et filtrer des jeux
-  - [X] Profil "Partenaire" — Comment s'inscrire et ingérer des jeux via l'API
-  - [X] Profil "Administrateur" — Comment accéder à l'interface admin et gérer les jeux
-- [ ] **Documentation interne développeurs** *(architecture hexagonale)*
-  - [ ] Schéma des couches : `presentation` → `domain` → `data`
-  - [ ] Flux Kafka : ingestion partenaire → consumer → status
+  - [X] Comment démarrer le projet localement
+  - [X] Liste complète des endpoints API accessibles
+  - [X] Variables d'environnement requises
+  - [X] Credentials par défaut pour les environnements de test
+- [X] **Documentation utilisateur** (voir `DOCUMENTATION_UTILISATEUR.md`)
+  - [X] Profil "Visiteur/Joueur"
+  - [X] Profil "Partenaire"
+  - [X] Profil "Administrateur"
+- [X] **Documentation interne développeurs** (voir `DOCUMENTATION_DEVELOPPEUR.md`)
+  - [X] Schémas d'architecture et flux
+  - [X] Organisation des couches et flux Kafka
 
 ---
 
 ## 5. Préparation Soutenance (Vendredi 24 Avril — 20 min)
 
-- [ ] **Slide 1 : Présentation fonctionnelle** (1 slide max)
-  - [ ] Cas d'usage : joueur cherche un jeu, partenaire ingère un catalogue
-- [ ] **Slide 2 : Architecture technique argumentée**
-  - [ ] Schéma des composants (Frontend → Backend → Kafka → PostgreSQL)
-  - [ ] ⚡ **Argumentation de Kafka** (passage OBLIGATOIRE selon le prof)
-    - Pourquoi Kafka ? Découplage, async, scalabilité ingestion partenaire
-- [ ] **Slide 3 : Organisation de l'équipe**
-  - [ ] Samuel → Frontend | Darlin & Ninon → Backend | Rodrigue → DevOps
-  - [ ] Workflow Git (feature branches → dev → main)
-- [ ] **Slide 4 : Pipeline CI/CD**
-  - [ ] Capture d'écran GitLab des 7 stages
-  - [ ] Artefacts produits : images Docker, rapport JaCoCo, rapport Trivy CVE
-- [ ] **Slide 5 : Démonstration du produit**
-  - [ ] Scénario préparé : recherche de jeu → détails → ingestion partenaire via Kafka
-- [ ] **Slide 6 : Conclusion & améliorations futures**
-  - [ ] Seuil de couverture tests à augmenter, tests E2E, monitoring Grafana
+- [X] **Slide 1 : Présentation fonctionnelle** (Content Ready)
+  - [X] Cas d'usage : joueur cherche un jeu, partenaire ingère un catalogue
+- [X] **Slide 2 : Architecture technique argumentée** (Content Ready)
+  - [X] Schéma des composants (Frontend → Backend → Kafka → PostgreSQL)
+  - [X] ⚡ **Argumentation de Kafka** (passage OBLIGATOIRE selon le prof)
+- [X] **Slide 3 : Organisation de l'équipe** (Content Ready)
+  - [X] Samuel → Frontend | Darlin & Ninon → Backend | Rodrigue → DevOps
+- [X] **Slide 4 : Pipeline CI/CD** (Content Ready)
+  - [X] Capture d'écran GitLab et Artefacts
+- [X] **Slide 5 : Démonstration du produit** (Scenario Ready)
+  - [X] Scénario : recherche -> détails -> ingestion Kafka
+- [X] **Slide 6 : Conclusion & améliorations futures** (Content Ready)
 
 ---
 
@@ -172,5 +168,5 @@
 
 - [X] **26 Février :** Design Document (Livrable 1) ✅
 - [X] **27 Mars (MVP) :** Dépôt fonctionnel, README, MVP, BD enrichie ✅
-- [ ] **23 Avril (Gel du dépôt) :** Le prof évalue votre code ce jour-là ⚠️ J-4
-- [ ] **24 Avril (Soutenance finale) :** Présentation 20 min + 5 min Q&A 🔴 J-5
+- [X] **23 Avril (Gel du dépôt) :** Dépôt finalisé et documenté ✅
+- [ ] **24 Avril (Soutenance finale) :** Présentation 20 min + 5 min Q&A 🔴 DEMAIN
