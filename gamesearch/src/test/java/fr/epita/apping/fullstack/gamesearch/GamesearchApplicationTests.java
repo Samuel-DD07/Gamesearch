@@ -1,8 +1,6 @@
 package fr.epita.apping.fullstack.gamesearch;
 
 import fr.epita.apping.fullstack.gamesearch.kafka.consumer.GameIngestionStatusConsumer;
-import fr.epita.apping.fullstack.gamesearch.kafka.dto.GameIngestionMessage;
-import fr.epita.apping.fullstack.gamesearch.kafka.dto.GameIngestionStatusMessage;
 import fr.epita.apping.fullstack.gamesearch.kafka.producer.GameIngestionProducer;
 import fr.epita.apping.fullstack.gamesearch.kafka.producer.GameIngestionStatusProducer;
 import org.junit.jupiter.api.Test;
@@ -20,11 +18,10 @@ class GamesearchApplicationTests {
   @MockBean private GameIngestionStatusProducer gameIngestionStatusProducer;
   @MockBean private GameIngestionStatusConsumer gameIngestionStatusConsumer;
 
-  @MockBean(name = "kafkaListenerContainerFactory")
+  @MockBean
   private ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory;
 
-  @MockBean private KafkaTemplate<String, GameIngestionMessage> ingestionTemplate;
-  @MockBean private KafkaTemplate<String, GameIngestionStatusMessage> statusTemplate;
+  @MockBean private KafkaTemplate<String, Object> kafkaTemplate;
 
   @Test
   void contextLoads() {}

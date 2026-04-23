@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/playwright:v1.59.1-noble
+
+WORKDIR /app
+
+# Install dependencies using npm install to handle potential lockfile mismatches
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
+
+# Copy the rest of the source code
+COPY . .
+
+# Browsers are already included in the noble image

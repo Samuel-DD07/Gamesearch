@@ -1,0 +1,24 @@
+# Override E2E : ajoute un container Playwright qui s'exécute dans le même réseau
+# Docker que frontend et backend.
+# Usage :
+#   docker compose -f docker-compose.yml -f docker-compose.ci.yml -f docker-compose.e2e.yml \
+#     up --exit-code-from playwright playwright
+
+services:
+  playwright:
+    build:
+      context: ../gamesearch-frontend
+      dockerfile: Dockerfile.e2e
+    environment:
+      - CI=true
+      # hostname "frontend" est le nom de service Docker Compose, accessible via le réseau interne.
+      - PLAYWRIGHT_BASE_URL=http://frontend
+    command: npx playwright test --config=playwright.config.ci.js
+    networks:
+      # Même réseau que le container frontend pour pouvoir l'atteindre par son hostname.
+      - gamesearch_frontend
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy

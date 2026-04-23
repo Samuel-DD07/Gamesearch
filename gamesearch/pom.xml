@@ -205,7 +205,9 @@
 				<version>${spotless.version}</version>
 				<configuration>
 					<java>
-						<googleJavaFormat/>
+						<googleJavaFormat>
+							<version>1.27.0</version>
+						</googleJavaFormat>
 						<removeUnusedImports/>
 					</java>
 				</configuration>

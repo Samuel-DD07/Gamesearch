@@ -1,0 +1,41 @@
+# =============================================================================
+# STAGE: SMOKE — branche dev uniquement
+# Valide que les containers démarrent correctement ensemble, pas seulement que
+# le code compile. C'est le seul endroit où on teste l'intégration réelle.
+#
+# interruptible: false — on ne veut pas laisser des containers orphelins tourner
+# sur le runner si le job est annulé en cours d'exécution.
+# =============================================================================
+
+smoke-test:
+  stage: smoke
+  image: docker:24.0.5
+  extends: .retry-on-flake
+  needs: [docker-build]
+  timeout: 8 minutes
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - mkdir -p /usr/local/lib/docker/cli-plugins
+    # On télécharge la version exacte de Compose définie en variable globale
+    # pour éviter toute incompatibilité avec docker-compose.ci.yml.
+    - wget -qO /usr/local/lib/docker/cli-plugins/docker-compose
+        "https://github.com/docker/compose/releases/download/v${COMPOSE_VERSION}/docker-compose-linux-x86_64"
+    - chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+  script:
+    # --wait bloque jusqu'à ce que les healthchecks passent ou que le timeout soit atteint.
+    # Si un service ne démarre pas dans les 120s, le job échoue proprement.
+    - docker compose -f gamesearch/docker-compose.yml -f gamesearch/docker-compose.ci.yml up --wait --timeout 120 backend frontend
+  after_script:
+    # On capture les logs et l'état des containers avant de tout supprimer.
+    # Sans ça, un timeout de healthcheck est quasi-impossible à débugger a posteriori.
+    - docker compose -f gamesearch/docker-compose.yml -f gamesearch/docker-compose.ci.yml logs --no-color > smoke-logs.txt 2>&1 || true
+    - docker compose -f gamesearch/docker-compose.yml -f gamesearch/docker-compose.ci.yml ps > smoke-status.txt 2>&1 || true
+    - docker compose -f gamesearch/docker-compose.yml -f gamesearch/docker-compose.ci.yml down -v --remove-orphans
+  artifacts:
+    when: on_failure
+    paths:
+      - smoke-logs.txt
+      - smoke-status.txt
+    expire_in: 3 days
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"

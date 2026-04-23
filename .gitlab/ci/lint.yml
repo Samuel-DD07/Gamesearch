@@ -1,0 +1,56 @@
+# =============================================================================
+# STAGE: LINT
+# needs: [] court-circuite l'ordre des stages : lint et audit tournent en parallèle
+# dès le démarrage du pipeline, ce qui réduit le temps total de plusieurs minutes.
+# interruptible: true permet à GitLab d'annuler ces jobs si un nouveau commit
+# arrive pendant leur exécution — inutile de valider du code déjà obsolète.
+# =============================================================================
+
+backend-format:
+  stage: lint
+  image: maven:3.9.6-eclipse-temurin-21
+  extends:
+    - .cache-maven
+    - .changes-code
+  needs: []
+  interruptible: true
+  timeout: 10 minutes
+  script:
+    - cd gamesearch
+    - chmod +x mvnw
+    - ./mvnw $MAVEN_CLI_OPTS spotless:check
+  after_script:
+    # On génère le diff uniquement en cas d'échec pour savoir exactement
+    # quels fichiers sont mal formatés, sans fouiller les logs bruts.
+    - cd gamesearch && ./mvnw $MAVEN_CLI_OPTS spotless:apply --dry-run 2>&1 | tee spotless-diff.txt || true
+  artifacts:
+    when: on_failure
+    paths:
+      - gamesearch/spotless-diff.txt
+    expire_in: 3 days
+
+frontend-lint:
+  stage: lint
+  image: node:20-alpine
+  extends:
+    - .cache-node
+    - .changes-code
+  needs: []
+  interruptible: true
+  timeout: 10 minutes
+  script:
+    - cd gamesearch-frontend
+    - npm ci
+    # Première passe silencieuse pour générer le rapport JSON exploitable dans GitLab.
+    # Le "|| true" empêche ce step d'arrêter le job — c'est la seconde passe qui gère l'exit code.
+    - npm run lint -- --format json --output-file eslint-report.json || true
+    - npm run lint
+  artifacts:
+    when: on_failure
+    reports:
+      # Le format codequality est rendu nativement dans l'interface MR de GitLab :
+      # les erreurs ESLint apparaissent directement en annotation sur les fichiers concernés.
+      codequality: gamesearch-frontend/eslint-report.json
+    paths:
+      - gamesearch-frontend/eslint-report.json
+    expire_in: 3 days
