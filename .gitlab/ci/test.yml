@@ -91,10 +91,15 @@ frontend-test:
     # CI=true force Jest en mode non-interactif et traite les warnings comme des erreurs,
     # ce qui évite des faux positifs silencieux sur les pipelines.
     CI: "true"
+    # Indique à jest-junit où écrire le rapport XML — doit correspondre au path dans artifacts.
+    JEST_JUNIT_OUTPUT_DIR: "gamesearch-frontend"
+    JEST_JUNIT_OUTPUT_NAME: "junit.xml"
   script:
     - cd gamesearch-frontend
     - npm ci
     - npm test -- --watchAll=false --coverage
+        --coverageReporters=text --coverageReporters=lcov --coverageReporters=cobertura
+        --reporters=default --reporters=jest-junit
   artifacts:
     when: always
     reports:
