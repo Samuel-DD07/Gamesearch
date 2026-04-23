@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/playwright:v1.59.1-noble
+
+WORKDIR /app
+
+# Install dependencies first for better caching
+COPY package*.json ./
+RUN npm ci
+
+# Copy the rest of the source code
+COPY . .
+
+# Browsers are already included in the noble image

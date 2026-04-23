@@ -6,25 +6,14 @@
 
 services:
   playwright:
-    # L'image MCR Playwright inclut Node.js, Chromium et toutes les dépendances système.
-    # La version doit correspondre à @playwright/test dans package.json.
-    # Pour mettre à jour : mcr.microsoft.com/playwright:vX.Y.Z-noble
-    # Version alignée sur @playwright/test@1.59.1 dans package.json.
-    # Pour mettre à jour : changer les deux en même temps (npm et cette image).
-    image: mcr.microsoft.com/playwright:v1.59.1-noble
-    volumes:
-      # Monte le code source frontend dans le container pour accéder aux tests et à la config.
-      # En CI, $(pwd) est résolu par le runner au niveau de la racine du projet.
-      - ../gamesearch-frontend:/app
-    working_dir: /app
+    build:
+      context: ../gamesearch-frontend
+      dockerfile: Dockerfile.e2e
     environment:
       - CI=true
       # hostname "frontend" est le nom de service Docker Compose, accessible via le réseau interne.
       - PLAYWRIGHT_BASE_URL=http://frontend
-    command: >
-      bash -c "npm ci &&
-               npx playwright install --with-deps chromium &&
-               npx playwright test --config=playwright.config.ci.js"
+    command: npx playwright test --config=playwright.config.ci.js
     networks:
       # Même réseau que le container frontend pour pouvoir l'atteindre par son hostname.
       - gamesearch_frontend
