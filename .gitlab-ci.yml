@@ -16,6 +16,11 @@ include:
 
 # Le nom dynamique remplace "Pipeline #1234" par quelque chose de lisible
 # dans la liste GitLab, surtout utile quand plusieurs pipelines tournent en même temps.
+# les regles sont les suivantes, on effectue le pipeline pour:
+# - si c'est une merge request
+# - si c'est la branche dev
+# - si c'est la branche main
+# - si c'est une branche infra
 workflow:
   name: '$CI_COMMIT_BRANCH — $CI_COMMIT_SHORT_SHA ($CI_PIPELINE_SOURCE)'
   rules:
