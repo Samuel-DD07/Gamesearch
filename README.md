@@ -109,3 +109,4 @@ Pour plus de détails sur les protocoles de tests, voir [TESTING.md](TESTING.md)
 
 ---
 *Projet réalisé dans le cadre du S8 APC — EPITA 2026.*
+# Gamesearch
