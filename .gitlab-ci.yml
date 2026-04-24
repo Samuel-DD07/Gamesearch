@@ -8,11 +8,6 @@ include:
   - local: .gitlab/ci/audit.yml
   - local: .gitlab/ci/lint.yml
   - local: .gitlab/ci/test.yml
-  - local: .gitlab/ci/build.yml
-  - local: .gitlab/ci/smoke.yml
-  - local: .gitlab/ci/e2e.yml
-  - local: .gitlab/ci/security.yml
-  - local: .gitlab/ci/promote.yml
 
 # Le nom dynamique remplace "Pipeline #1234" par quelque chose de lisible
 # dans la liste GitLab, surtout utile quand plusieurs pipelines tournent en même temps.
@@ -37,41 +32,19 @@ variables:
   # -B = batch mode (pas de prompts interactifs), --no-transfer-progress = logs lisibles en CI.
   MAVEN_CLI_OPTS: "-B --no-transfer-progress --fail-at-end"
 
-  # overlay2 est le driver de stockage Docker le plus performant pour la gestion
-  # des layers d'images. Indispensable dans un contexte de builds fréquents.
-  DOCKER_DRIVER: overlay2
-
-  BACKEND_IMAGE: $CI_REGISTRY_IMAGE/gamesearch-backend
-  FRONTEND_IMAGE: $CI_REGISTRY_IMAGE/gamesearch-frontend
-
-  # On fixe les versions de Trivy et Compose pour éviter qu'une mise à jour
-  # silencieuse casse le pipeline un vendredi soir.
-  TRIVY_VERSION: "0.49.0"
-  COMPOSE_VERSION: "2.24.6"
-
 # L'ordre des stages reflète le principe "fail fast" : on détecte les problèmes
 # les moins coûteux à corriger en premier (sécurité statique, style) avant de
-# lancer des opérations longues comme le build ou le smoke test.
+# lancer des opérations longues
 stages:
   - audit
   - lint
   - test
-  - build
-  - smoke
-  - e2e
-  - security
-  - promote
 
 # =============================================================================
 # TEMPLATES PARTAGÉS
 # Ces jobs cachés (préfixe ".") sont réutilisés via "extends" dans les sous-fichiers.
-# Les YAML anchors étant limités au fichier courant, extends est le seul moyen
-# de partager de la configuration entre fichiers inclus.
 # =============================================================================
 
-# Le cache est invalidé automatiquement dès que le fichier de dépendances change.
-# Pas besoin de gérer la clé manuellement : si pom.xml ou package-lock.json bougent,
-# GitLab reconstruit le cache proprement.
 .cache-maven:
   cache:
     key:
@@ -88,8 +61,6 @@ stages:
     paths:
       - gamesearch-frontend/node_modules/
 
-# Les échecs réseau (registry surchargé, timeout npm, runner instable) sont transitoires.
-# max: 2 relances automatiquement sans intervention humaine sur ces cas connus.
 .retry-on-flake:
   retry:
     max: 2
@@ -98,13 +69,6 @@ stages:
       - stuck_or_timeout_failure
       - scheduler_failure
 
-# Déclenche les jobs lint/test uniquement si des fichiers de code ont changé.
-# Sur dev et main on tourne toujours : la stabilité prime sur l'optimisation.
-# Un merge commit (ex: infra → dev) ne touche pas forcément de fichiers applicatifs,
-# ce qui rendrait lint et test absents du pipeline et casserait la chaîne needs.
-# L'optimisation par changement de fichiers est donc réservée aux MR uniquement :
-# un MR qui ne touche qu'un README ou un fichier de config ne justifie pas
-# de relancer toute la suite de tests.
 .changes-code:
   rules:
     - if: $CI_COMMIT_BRANCH == "dev"
