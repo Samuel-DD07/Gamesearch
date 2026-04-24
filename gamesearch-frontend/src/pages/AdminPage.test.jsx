@@ -1,12 +1,23 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import AdminPage from './AdminPage';
-import { partnerService } from '../services/api';
+import { gameService, partnerService } from '../services/api';
 
 // Mock API
 jest.mock('../services/api', () => ({
+    gameService: {
+        getGames: jest.fn(),
+        createGame: jest.fn(),
+        updateGame: jest.fn(),
+        deleteGame: jest.fn(),
+        getRecentGames: jest.fn(),
+        getPopularGames: jest.fn(),
+    },
     partnerService: {
+        getAllPartners: jest.fn(),
+        register: jest.fn(),
         submitGame: jest.fn(),
+        bulkImport: jest.fn(),
         getIngestionStatus: jest.fn(),
     }
 }));
@@ -16,65 +27,68 @@ const future = { v7_startTransition: true, v7_relativeSplatPath: true };
 describe('AdminPage', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        // Mock setInterval and clearInterval
-        jest.useFakeTimers();
+        
+        // Default mock values to prevent render crashes
+        gameService.getGames.mockResolvedValue({ data: { content: [], totalElements: 0, totalPages: 0 } });
+        partnerService.getAllPartners.mockResolvedValue({ data: [] });
     });
 
-    afterEach(() => {
-        jest.useRealTimers();
-    });
-
-    it('renders the admin dashboard completely', () => {
-        render(
-            <MemoryRouter future={future}>
-                <AdminPage />
-            </MemoryRouter>
-        );
-
-        expect(screen.getByText('Partner Dashboard')).toBeInTheDocument();
-        expect(screen.getByText('Catalog Ingestion')).toBeInTheDocument();
-        expect(screen.getByText('System Status')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /Sync Now/i })).toBeInTheDocument();
-    });
-
-    it('triggers a sync and starts polling for status', async () => {
-        partnerService.submitGame.mockResolvedValue({ 
-            data: { gameId: 'ext-123', status: 'PENDING', message: 'Kafka message sent' } 
-        });
-
-        render(
-            <MemoryRouter future={future}>
-                <AdminPage />
-            </MemoryRouter>
-        );
-
-        const syncBtn = screen.getByRole('button', { name: /Sync Now/i });
+    it('renders the initial dashboard view', async () => {
         await act(async () => {
-            fireEvent.click(syncBtn);
+            render(
+                <MemoryRouter future={future}>
+                    <AdminPage />
+                </MemoryRouter>
+            );
         });
 
-        await waitFor(() => {
-            expect(partnerService.submitGame).toHaveBeenCalledTimes(1);
-        });
+        expect(screen.getByText(/System Overview/i)).toBeInTheDocument();
+    });
 
-        // The monitor panel should open
-        expect(await screen.findByText('Live Ingestion Monitor')).toBeInTheDocument();
-        expect(screen.getByText('PENDING')).toBeInTheDocument();
-
-        // Advance timers to trigger polling
-        partnerService.getIngestionStatus.mockResolvedValue({
-            data: { gameId: 'ext-123', status: 'SUCCESS', message: 'Ingested', internalGameId: 'db-123' }
+    it('switches to games catalog and shows the game list', async () => {
+        gameService.getGames.mockResolvedValue({
+            data: {
+                content: [{ id: '1', title: 'Test Game Mock', releaseYear: 2024, platforms: ['PC'] }],
+                totalElements: 1,
+                totalPages: 1
+            }
         });
 
         await act(async () => {
-            jest.advanceTimersByTime(2000);
+            render(
+                <MemoryRouter future={future}>
+                    <AdminPage />
+                </MemoryRouter>
+            );
         });
+
+        const gamesTab = screen.getByRole('button', { name: /Games Catalog/i });
+        fireEvent.click(gamesTab);
 
         await waitFor(() => {
-            expect(partnerService.getIngestionStatus).toHaveBeenCalledWith('ext-123');
-            expect(screen.getByText('SUCCESS')).toBeInTheDocument();
+            expect(screen.getByText('Test Game Mock')).toBeInTheDocument();
+        });
+    });
+
+    it('opens the add game modal when clicking Add Game', async () => {
+        await act(async () => {
+            render(
+                <MemoryRouter future={future}>
+                    <AdminPage />
+                </MemoryRouter>
+            );
         });
 
-        expect(screen.getByText(/Ingested in Catalog/i)).toBeInTheDocument();
+        fireEvent.click(screen.getByRole('button', { name: /Games Catalog/i }));
+        
+        await waitFor(() => {
+            expect(screen.getByRole('button', { name: /Add Game/i })).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: /Add Game/i }));
+
+        await waitFor(() => {
+            expect(screen.getByText(/Add New Game/i)).toBeInTheDocument();
+        });
     });
 });
