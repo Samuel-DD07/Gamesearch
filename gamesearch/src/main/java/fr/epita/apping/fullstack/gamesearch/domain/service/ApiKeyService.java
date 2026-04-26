@@ -11,10 +11,11 @@ public class ApiKeyService {
 
   private static final String PREFIX = "gs_";
   private static final int KEY_BYTES = 32;
+  private static final SecureRandom RANDOM = new SecureRandom();
 
   public String generateApiKey() {
     byte[] bytes = new byte[KEY_BYTES];
-    new SecureRandom().nextBytes(bytes);
+    RANDOM.nextBytes(bytes);
     return PREFIX + HexFormat.of().formatHex(bytes);
   }
 

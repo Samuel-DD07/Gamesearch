@@ -32,8 +32,8 @@ spring:
 
 app:
   jwt:
-    secret: ${JWT_SECRET:dGhpcy1pcy1hLXZlcnktbG9uZy1zZWNyZXQta2V5LWZvci1qd3QtaHMyNTYtZ2FtZXNlYXJjaA==}
+    secret: ${JWT_SECRET}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   admin:
-    username: ${ADMIN_USERNAME:admin}
-    password: ${ADMIN_PASSWORD:admin123}
+    username: ${ADMIN_USERNAME}
+    password: ${ADMIN_PASSWORD}

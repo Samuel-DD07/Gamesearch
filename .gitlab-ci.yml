@@ -39,6 +39,7 @@ stages:
   - audit
   - lint
   - test
+  - release
 
 # =============================================================================
 # TEMPLATES PARTAGÉS
@@ -83,3 +84,22 @@ stages:
         - .gitlab/ci/**/*
       when: always
     - when: never
+
+# =============================================================================
+# RELEASE
+# =============================================================================
+
+release:
+  stage: release
+  image: node:20-slim
+  variables:
+    GITLAB_TOKEN: $GITLAB_TOKEN
+  before_script:
+    - apt-get update && apt-get install -y git
+    - npm install -g semantic-release @semantic-release/gitlab @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+  script:
+    - semantic-release
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual # Sécurité pour ne pas tagger à chaque push sur main sans validation
+  allow_failure: true

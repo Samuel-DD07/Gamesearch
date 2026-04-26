@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +39,8 @@ public class PartnerService {
   private final ApiKeyService apiKeyService;
   private final GameIngestionProducer ingestionProducer;
   private final IngestionStatusRepository ingestionStatusRepository;
+
+  @Lazy @Autowired private PartnerService self;
 
   @Transactional
   public PartnerEntity register(PartnerRegisterRequest request) {
@@ -151,7 +155,7 @@ public class PartnerService {
 
     for (int i = 0; i < requests.size(); i++) {
       try {
-        submitGame(requests.get(i), partnerName);
+        self.submitGame(requests.get(i), partnerName);
         successful++;
       } catch (Exception e) {
         errors.add("Entry " + (i + 1) + ": " + e.getMessage());
