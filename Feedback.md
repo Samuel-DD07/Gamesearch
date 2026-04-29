@@ -2,24 +2,40 @@
 
 Ce document synthétise les retours d'évaluation pour le groupe **MasterGame** (Équipe 17) basés sur la grille d'évaluation du projet Gamesearch.
 
-## 📊 Résultat Global (Code)
-**Note de Code : 54 / 60** (basée sur un score brut de 63 / 70)
-**Note de Code (sur 40) : 36 / 40**
+## 📊 Résultats Détaillés (MasterGame - Équipe 17)
+
+### 📄 Document de Conception
+**Note : 15 / 25** (équivalent à **12 / 20**)
+*   **Motivation & Business** : 3 / 4
+*   **Backlog & US** : 5 / 8
+*   **Stratégie Sprints** : **0 / 4** ⚠️ (Section entièrement manquante)
+*   **Architecture Logicielle** : 3 / 4
+*   **Plateforme DevOps** : 4 / 5
+
+### 💻 Développement (Code)
+**Note brute : 63 / 70**
+**Note de Code (sur 40) : 36 / 40** (Palier 4 atteint)
 
 ---
 
-## 🧮 Simulateur de Note Finale
-Selon la formule officielle : **(Note de Conception + Note de Code + 20) / 5**
+## 🧮 Calcul de la Note Finale (Scolarité)
+Selon la formule : **(Note de Conception + Note de Code + 20) / 5**
 
-| Note de Conception (sur 40) | Note de Code (sur 40) | Bonus | Note Finale / 20 |
-| :--- | :---: | :---: | :---: |
-| **32** (16/20) | 36 | 20 | **17.6** |
-| **34** (17/20) | 36 | 20 | **18.0** |
-| **36** (18/20) | 36 | 20 | **18.4** |
-| **38** (19/20) | 36 | 20 | **18.8** |
-| **40** (20/20) | 36 | 20 | **19.2** |
+| Élément | Score (sur 40) | Contribution |
+| :--- | :---: | :---: |
+| Note de Conception | **24** | 24 / 40 |
+| Note de Code | **36** | 36 / 40 |
+| Bonus Fixe | **20** | 20 / 40 |
+| **TOTAL** | **80 / 100** | **16.0 / 20** |
 
-*Note : Additionnez votre score de dossier (sur 40) à 36, ajoutez 20, puis divisez par 5.*
+---
+
+## ⚖️ Nouvelle Pondération (Phase Finale)
+L'enseignant a communiqué une nouvelle répartition des points :
+*   **Conception (20%)** : 12/20 → **2.4 pts**
+*   **Projet (60%)** : 18/20 → **10.8 pts**
+*   **Présentation (20%)** : À venir... (Ex: 18/20 → 3.6 pts)
+*   **Note Estimée** : **16.8 / 20** (basé sur une présentation à 18/20)
 
 ---
 
@@ -88,4 +104,11 @@ Selon la formule officielle : **(Note de Conception + Note de Code + 20) / 5**
 ---
 
 > [!TIP]
-> **Note du correcteur** : "Stratégie pyramide complète assumée. Sécurité massive en CI. L'usage d'ArchUnit est un vrai plus différenciateur."
+> **Commentaires de l'enseignant** : 
+> "Usage de Kafka solide — le livrer tôt pour lever le risque technique. ALERTE : aucune stratégie de sprints dans le document ! L'équipe a la technique mais pas la planification. Risque de travailler sans jalons et de livrer en retard."
+
+## 📢 Recommandations Prioritaires
+1.  **URGENCE** : Définir un sprint planning (découpage en 3-4 sprints avec objectifs).
+2.  **Backlog** : Ajouter les US du profil Admin (manquantes).
+3.  **Qualité** : Ajouter des critères d'acceptation aux User Stories (US).
+4.  **Kafka** : Maintenir l'implémentation actuelle qui est jugée comme la plus aboutie techniquement.
